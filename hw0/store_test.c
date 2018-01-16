@@ -93,7 +93,7 @@ void test1(void)
   if (rc == NULL) 
      printf("Test 1: LOCATE pid failed\n");
   else
-     printf("Test 1: LOCATE pid %ld got %ld\n", 1234, *(long *)rc);
+     printf("Test 1: LOCATE pid %ld got %ld\n", (long)1234, *(long *)rc);
 
   rc = task_store(LOCATE, "100 paged_start", NULL);
   if (rc == NULL) 
@@ -123,13 +123,13 @@ void test1(void)
   if (rc == NULL) 
     printf("Test 1: LOCATE inode_start failed\n");
   else
-    printf("Test 1: LOCATE inode_start %ld got %ld\n", 1000, *(long *)rc);
+    printf("Test 1: LOCATE inode_start %ld got %ld\n", (long)1000, *(long *)rc);
 
   rc = task_store(LOCATE, "100 inode_end", NULL);
   if (rc == NULL) 
     printf("Test 1: LOCATE inode_end failed\n");
   else
-    printf("Test 1: LOCATE inode_end %ld got %ld\n", 1000000, *(long *)rc);
+    printf("Test 1: LOCATE inode_end %ld got %ld\n", (long)1000000, *(long *)rc);
 
   return;
 }
