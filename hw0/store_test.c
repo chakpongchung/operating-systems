@@ -68,10 +68,10 @@ void test1(void)
 
   // populate all the non-pointer fields
   // in this test, the initial pointer fields are used
-  my_task.pid = 1234;
+  my_task.pid = (long)1234;
 
-  my_fs.inode_start = 1000;
-  my_fs.inode_end = 1000000;
+  my_fs.inode_start = (long)1000;
+  my_fs.inode_end = (long)1000000;
 
   my_paged.paged_start = (void *)malloc(1024);
   my_paged.paged_end = (void *) malloc(16);
