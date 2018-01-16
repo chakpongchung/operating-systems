@@ -8,13 +8,13 @@ int num_tasks = 0;   // num of tasks used
 // define the struct for an entry in our storage
 typedef struct task_entry {
     const char *key;
-    task *ptr;
+    task *my_task;
 } task_entry;
 
 task_entry *data;   // array where data will be stored
 
 // Will initialize the data storage
-void *init(char *parm, task *ptr){
+void *init(){
     data = (task_entry *) malloc(MAXSIZE*sizeof(task_entry));
     return data;
 }
@@ -25,14 +25,14 @@ void *store(char *parm, task *ptr){
     if (num_tasks == MAXSIZE - 1) return NULL;  // check maximum size exceeded
 
     // TODO replace this with actually copying data
-    task_entry new_entry = {.key = parm, .ptr = ptr};
+    task_entry new_entry = {.key = parm, .my_task = ptr};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
     return data+num_tasks-1;
 }
 
 // Will locate a task in our data structure
-void *locate(char *parm, task *ptr){
+void *locate(char *parm){
     if (!data) return NULL;                     // check if init is called
 
     return NULL;
@@ -45,9 +45,9 @@ void *locate(char *parm, task *ptr){
 //      3 return a pointer to an element of a previously stored copy of a task
 void *task_store(enum operation op, char *parm, task *ptr){
     switch(op){
-        case INIT: return init(parm, ptr);
+        case INIT: return init();
         case STORE: return store(parm, ptr);
-        case LOCATE: return locate(parm, ptr);
+        case LOCATE: return locate(parm);
         default: break;
     }
     return NULL;

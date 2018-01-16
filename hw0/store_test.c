@@ -10,6 +10,12 @@
 
 #include "task.h"
 
+// define the struct for an entry in our storage
+typedef struct task_entry {
+    const char *key;
+    task *my_task;
+} task_entry;
+
 /* 
  * Create an instance of the structures used to represent a task
  * They are made external so they are accessible to each test
@@ -53,8 +59,28 @@ void main (int argc, char *argv[])
   test1();
 
   // more test functions called here
+  testdata();
 
   return;
+}
+
+void testdata(void)
+{
+  void *rc;
+
+  // populate all the non-pointer fields
+  // in this test, the initial pointer fields are used
+  my_task.pid = (long)1234;
+  my_fs.inode_start = (long)1000;
+  my_fs.inode_end = (long)1000000;
+  my_paged.paged_start = (void *)malloc(1024);
+  my_paged.paged_end = (void *) malloc(16);
+  my_pinned.pinned_start = (void *) malloc(2048);
+  my_pinned.pinned_end = (void *) malloc(16);
+
+  rc = task_store(STORE, "100", &my_task);
+  task_entry *entry = (task_entry*) rc;
+  printf("Task 1 pid: %ld\n", entry->my_task->pid);
 }
 
 /*
