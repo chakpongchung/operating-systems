@@ -24,7 +24,11 @@ void *store(char *parm, task *ptr){
     if (!data) return NULL;                     // check if init is called
     if (num_tasks == MAXSIZE - 1) return NULL;  // check maximum size exceeded
 
-    return NULL;
+    // TODO replace this with actually copying data
+    task_entry new_entry = {.key = parm, .ptr = ptr};
+    *(data+num_tasks) = new_entry;
+    num_tasks += 1;
+    return *(data+num_tasks-1);
 }
 
 // Will locate a task in our data structure
