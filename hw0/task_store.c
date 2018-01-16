@@ -28,7 +28,7 @@ void *store(char *parm, task *ptr){
     task_entry new_entry = {.key = parm, .ptr = ptr};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
-    return *(data+num_tasks-1);
+    return data+num_tasks-1;
 }
 
 // Will locate a task in our data structure
