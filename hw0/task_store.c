@@ -72,7 +72,7 @@ void *locate(char *parm){
     char *field;
     key = strtok(parm, " ");
     field = strtok(NULL, " ");
-    printf("Key: %s \t Field: %s\n",key,field)
+    printf("Key: %s \t Field: %s\n",key,field);
     return NULL;
 }
 
