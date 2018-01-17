@@ -39,7 +39,7 @@ void *store(char *parm, task *ptr){
     }
     // copy VM
     if (my_task->vm_ptr){
-        FS *my_vm;
+        VM *my_vm;
         my_vm = (VM *) malloc(sizeof(VM));
         *my_vm = *(my_task->vm_ptr);
         my_task->vm_ptr = my_vm;
