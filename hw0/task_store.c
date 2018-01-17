@@ -70,7 +70,9 @@ void *locate(char *parm){
     if (!data) return NULL;                     // check if init is called
     char *key;
     char *field;
+    printf("Key: %s \t Field: %s\n",key,field);
     key = strtok(parm, " ");
+    printf("Key: %s \t Field: %s\n",key,field);
     field = strtok(NULL, " ");
     printf("Key: %s \t Field: %s\n",key,field);
     return NULL;
