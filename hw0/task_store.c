@@ -26,7 +26,7 @@ void *store(char *parm, task *ptr){
 
     // TODO replace this with actually copying data
     task my_task = *ptr;
-    task_entry new_entry = {.key = parm, .my_task = my_task};
+    task_entry new_entry = {.key = parm, .my_task = &my_task};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
     return data+num_tasks-1;
