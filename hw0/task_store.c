@@ -74,6 +74,9 @@ void *locate(char *parm){
     char *field;
     key = strtok(copy, " ");
     field = strtok(NULL, " ");
+    printf("Key: %s\t Field: %s\n",key,field)
+    if (!key) return NULL;
+    if (!field) return NULL;
 
     // find the key in our data structure
     task_entry *found = NULL;
@@ -84,6 +87,7 @@ void *locate(char *parm){
     }
     if (!found) return NULL;
     if (!found->task_ptr) return NULL;
+    printf("Made it here\n")
 
     // find the field in our found entry and return the address
     if (!strcmp(field, "pid")) return &(found->task_ptr->pid);
