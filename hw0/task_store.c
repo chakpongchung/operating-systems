@@ -1,6 +1,7 @@
 #include "task.h"
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAXSIZE 50   // maximum number of tasks allowed
 int num_tasks = 0;   // num of tasks used
