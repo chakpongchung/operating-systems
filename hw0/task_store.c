@@ -1,8 +1,16 @@
+/*  COMP 790 - HW 0
+/   David Dunn
+/
+/   Function capable of creating and performing a variety of operations on some prototypical Linux kernel structures
+/   Creates and maintains a data structure for storing tasks and associated data
+/   Interface through task_store function
+/
+*/
+
 #include "task.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #define MAXSIZE 50   // maximum number of tasks allowed
 int num_tasks = 0;   // num of tasks used
