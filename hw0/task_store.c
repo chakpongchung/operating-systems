@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #define MAXSIZE 50   // maximum number of tasks allowed
 int num_tasks = 0;   // num of tasks used
@@ -67,7 +68,11 @@ void *store(char *parm, task *ptr){
 // Will locate a task in our data structure
 void *locate(char *parm){
     if (!data) return NULL;                     // check if init is called
-
+    char *key;
+    char *field;
+    key = strtok(parm, " ");
+    field = strtok(NULL, " ");
+    printf("Key: %s \t Field: %s\n",key,field)
     return NULL;
 }
 
