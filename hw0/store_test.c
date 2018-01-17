@@ -81,13 +81,13 @@ void testdata(void)
 
   rc = task_store(STORE, "100", &my_task);
   task_entry *entry = (task_entry*) rc;
-  printf("Task 1 pid: %ld\n", entry->my_task->pid);
+  printf("Task 1 pid: %ld\n", entry->pid);
   
   my_task.pid = (long)4321;
   rc = task_store(STORE, "101", &my_task);
   task_entry *entry2 = (task_entry*) rc;
-  printf("Task 1 pid: %ld\n", entry->my_task->pid);
-  printf("Task 2 pid: %ld\n", entry2->my_task->pid);
+  printf("Task 1 pid: %ld\n", entry->pid);
+  printf("Task 2 pid: %ld\n", entry2->pid);
 
 }
 

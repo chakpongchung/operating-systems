@@ -28,30 +28,37 @@ void *store(char *parm, task *ptr){
     // copy task
     task *my_task;
     my_task = (task *) malloc(sizeof(task));
-    *my_task = *ptr;
     //memcpy(my_task, ptr, sizeof(task));
-    /*// copy FS
+    *my_task = *ptr;
+    // copy FS
     if (my_task->fs_ptr){
         FS *my_fs;
         my_fs = (FS *) malloc(sizeof(FS));
-        memcpy(my_fs, my_task->fs_ptr, sizeof(FS));
+        *my_fs = *(my_task->fs_ptr);
         my_task->fs_ptr = my_fs;
     }
     // copy VM
     if (my_task->vm_ptr){
         FS *my_vm;
         my_vm = (VM *) malloc(sizeof(VM));
-        memcpy(my_vm, my_task->vm_ptr, sizeof(VM));
+        *my_vm = *(my_task->vm_ptr);
         my_task->vm_ptr = my_vm;
         // copy paged
         if (my_vm->paged_ptr){
-            FS *my_fs;
-            my_fs = (FS *) malloc(sizeof(FS));
-            memcpy(my_fs, ->fs_ptr, sizeof(FS));
-            my_task->fs_ptr = my_fs;
+            paged *my_paged;
+            my_paged = (paged *) malloc(sizeof(paged));
+            *my_paged = *(my_vm->paged_ptr);
+            my_vm->paged_ptr = my_paged;
+        }
+        // copy pinned
+        if (my_vm->pinned_ptr){
+            pinned *my_pinned;
+            my_pinned = (pinned *) malloc(sizeof(pinned));
+            *my_pinned = *(my_vm->pinned_ptr);
+            my_vm->pinned_ptr = my_pinned;
         }
     }
-    */
+    
     task_entry new_entry = {.key = parm, .my_task = my_task};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
