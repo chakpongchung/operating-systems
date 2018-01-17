@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef int bool;
-#define TRUE 1
-#define FALSE 0
-
 #define MAXSIZE 50   // maximum number of tasks allowed
 int num_tasks = 0;   // num of tasks used
 
@@ -82,34 +78,30 @@ void *locate(char *parm){
     // find the key in our data structure
     task_entry *found = NULL;
     for (int i = 0; i < MAXSIZE; i++) {
-        if (!strcmp((*(data+i))->key, key)) {
+        if (!strcmp(*(data+i)->key, key)) {
             found = data+i;
         }
     }
     if (!found) return NULL;
     if (!found->task_ptr) return NULL;
 
-    // find the field in our found entry
-    bool end = TRUE;
-    switch (field){
-        case "pid": return &(found->task_ptr->pid);
-        case "inode_start": end = FALSE;
-        case "inode_end": if (!found->task_ptr->fs_ptr) return NULL;
-            if (!end) return &(found->task_ptr->fs_ptr->inode_start);
-            else return &(found->task_ptr->fs_ptr->inode_end);
-        default: break;
-    }
+    // find the field in our found entry and return the address
+    if (!strcmp(field, "pid") return &(found->task_ptr->pid);
+    if (!strncmp("inode", field, 5)){
+        if (!found->task_ptr->fs_ptr) return NULL;
+        if (!strcmp(field,"inode_start")) return &(found->task_ptr->fs_ptr->inode_start);
+        if (!strcmp(field,"inode_end")) return &(found->task_ptr->fs_ptr->inode_end);
+    } 
     if (!found->task_ptr->vm_ptr) return NULL;
-    switch (field){
-        case "paged_start": end = FALSE;
-        case "paged_end": if (!found->task_ptr->vm_ptr->paged_ptr) return NULL;
-            if (!end) return &(found->task_ptr->vm_ptr->paged_ptr->paged_start);
-            else return &(found->task_ptr->vm_ptr->paged_ptr->paged_end);
-        case "pinned_start": end = FALSE;
-        case "pinned_end": if (!found->task_ptr->vm_ptr->pinned_ptr) return NULL;
-            if (!end) return &(found->task_ptr->vm_ptr->pinned_ptr->pinned_start);
-            else return &(found->task_ptr->vm_ptr->pinned_ptr->pinned_end);
-        default: break;
+    if (!strncmp("paged", field, 5)){
+        if (!found->task_ptr->vm_ptr->paged_ptr) return NULL;
+        if (!strcmp(field, "paged_start")) return &(found->task_ptr->vm_ptr->paged_ptr->paged_start);
+        if (!strcmp(field, "paged_end")) return &(found->task_ptr->vm_ptr->paged_ptr->paged_end);
+    }
+    if (!strncmp("pinned", field, 6)){
+        if (!found->task_ptr->vm_ptr->pinned_ptr) return NULL;
+        if (!strcmp(field, "pinned_start")) return &(found->task_ptr->vm_ptr->pinned_ptr->pinned_start); 
+        if (!strcmp(field, "pinned_end")) return &(found->task_ptr->vm_ptr->pinned_ptr->pinned_end);
     }
     return NULL;
 }
