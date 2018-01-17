@@ -25,8 +25,9 @@ void *store(char *parm, task *ptr){
     if (num_tasks == MAXSIZE - 1) return NULL;  // check maximum size exceeded
 
     // TODO replace this with actually copying data
-    task my_task = *ptr;
-    task_entry new_entry = {.key = parm, .my_task = &my_task};
+    task *my_task;
+    memcpy(my_task, ptr, sizeof(task))
+    task_entry new_entry = {.key = parm, .my_task = my_task};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
     return data+num_tasks-1;
