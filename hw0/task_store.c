@@ -28,7 +28,6 @@ void *store(char *parm, task *ptr){
     // copy task
     task *my_task;
     my_task = (task *) malloc(sizeof(task));
-    //memcpy(my_task, ptr, sizeof(task));
     *my_task = *ptr;
     // copy FS
     if (my_task->fs_ptr){
@@ -58,7 +57,7 @@ void *store(char *parm, task *ptr){
             my_vm->pinned_ptr = my_pinned;
         }
     }
-    
+    // add our copied task into our array
     task_entry new_entry = {.key = parm, .my_task = my_task};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
