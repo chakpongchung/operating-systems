@@ -24,6 +24,7 @@ void *init(){
 // Will store a deep copy of a task in our data structure
 void *store(char *parm, task *ptr){
     if (!data) return NULL;                     // check if init is called
+    if (!ptr) return NULL;
     if (num_tasks == MAXSIZE - 1) return NULL;  // check maximum size exceeded
 
     // copy task
@@ -75,14 +76,12 @@ void *locate(char *parm){
     char *field;
     key = strtok(copy, " ");
     field = strtok(NULL, " ");
-    printf("Key: %s\t Field: %s\n",key,field);
     if (!key) return NULL;
     if (!field) return NULL;
 
     // find the key in our data structure
     task_entry *found = NULL;
     for (int i = 0; i < num_tasks; i++) {
-        printf("Data: %s\t Arg: %s\n",(data+i)->key, key);
         if (!strcmp((data+i)->key, key)) {
             found = data+i;
             break;
@@ -90,7 +89,6 @@ void *locate(char *parm){
     }
     if (!found) return NULL;
     if (!found->task_ptr) return NULL;
-    printf("Made it here\n");
 
     // find the field in our found entry and return the address
     if (!strcmp(field, "pid")) return &(found->task_ptr->pid);
