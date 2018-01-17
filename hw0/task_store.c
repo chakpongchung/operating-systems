@@ -68,10 +68,12 @@ void *store(char *parm, task *ptr){
 // Will locate a task in our data structure
 void *locate(char *parm){
     if (!data) return NULL;                     // check if init is called
+    char *copy;
+    copy = malloc(sizeof(char) * strlen(parm));
     char *key;
     char *field;
     printf("Key: %s \t Field: %s\n",key,field);
-    key = strtok(parm, " ");
+    key = strtok(copy, " ");
     printf("Key: %s \t Field: %s\n",key,field);
     field = strtok(NULL, " ");
     printf("Key: %s \t Field: %s\n",key,field);
