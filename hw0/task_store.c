@@ -81,10 +81,11 @@ void *locate(char *parm){
 
     // find the key in our data structure
     task_entry *found = NULL;
-    for (int i = 0; i < MAXSIZE; i++) {
+    for (int i = 0; i < num_tasks; i++) {
         printf("Data: %s\t Arg: %s\n",(data+i)->key, key);
         if (!strcmp((data+i)->key, key)) {
             found = data+i;
+            break;
         }
     }
     if (!found) return NULL;
