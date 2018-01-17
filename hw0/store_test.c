@@ -83,7 +83,7 @@ void testdata(void)
   task_entry *entry = (task_entry*) rc;
   printf("Task 1 pid: %ld\n", entry->my_task->pid);
   printf("Task 1 inode_start: %ld\n", entry->my_task->fs_ptr->inode_start);
-  printf("Task 1 paged_start: %ld\n", entry->my_task->vm_ptr->paged_ptr->paged_start);
+  printf("Task 1 paged_start: %ld\n", (long)entry->my_task->vm_ptr->paged_ptr->paged_start);
   
   my_task.pid = (long)4321;
   my_fs.inode_start = (long)8888;
@@ -94,8 +94,19 @@ void testdata(void)
   printf("Task 2 pid: %ld\n", entry2->my_task->pid);
   printf("Task 1 inode_start: %ld\n", entry->my_task->fs_ptr->inode_start);
   printf("Task 2 inode_start: %ld\n", entry2->my_task->fs_ptr->inode_start);
-  printf("Task 1 paged_start: %ld\n", entry->my_task->vm_ptr->paged_ptr->paged_start);
-  printf("Task 2 paged_start: %ld\n", entry2->my_task->vm_ptr->paged_ptr->paged_start);
+  printf("Task 1 paged_start: %ld\n", (long)entry->my_task->vm_ptr->paged_ptr->paged_start);
+  printf("Task 2 paged_start: %ld\n", (long)entry2->my_task->vm_ptr->paged_ptr->paged_start);
+
+  my_fs = NULL;
+  rc = task_store(STORE, "101", &my_task);
+  task_entry *entry2 = (task_entry*) rc;
+  printf("Task 1 pid: %ld\n", entry->my_task->pid);
+  printf("Task 2 pid: %ld\n", entry2->my_task->pid);
+  printf("Task 1 inode_start: %ld\n", entry->my_task->fs_ptr->inode_start);
+  printf("Task 2 inode_start: %ld\n", entry2->my_task->fs_ptr->inode_start);
+  printf("Task 1 paged_start: %ld\n", (long)entry->my_task->vm_ptr->paged_ptr->paged_start);
+  printf("Task 2 paged_start: %ld\n", (long)entry2->my_task->vm_ptr->paged_ptr->paged_start);
+
 
 }
 
