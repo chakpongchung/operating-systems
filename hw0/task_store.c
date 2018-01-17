@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #define MAXSIZE 50   // maximum number of tasks allowed
 int num_tasks = 0;   // num of tasks used
@@ -10,7 +9,7 @@ int num_tasks = 0;   // num of tasks used
 // define the struct for an entry in our storage
 typedef struct task_entry {
     const char *key;
-    task *my_task;
+    task *task_ptr;
 } task_entry;
 
 task_entry *data;   // array where data will be stored
@@ -59,23 +58,55 @@ void *store(char *parm, task *ptr){
         }
     }
     // add our copied task into our array
-    task_entry new_entry = {.key = parm, .my_task = my_task};
+    task_entry new_entry = {.key = parm, .task_ptr = my_task};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
     return data+num_tasks-1;
 }
 
-// Will locate a task in our data structure
+// Will locate a task in our data structure and return requested field
 void *locate(char *parm){
     if (!data) return NULL;                     // check if init is called
-    char *copy = strdup(parm);
-    //copy = malloc(sizeof(char) * strlen(parm));
     
+    // tokenize the parm string
+    char *copy = strdup(parm);
     char *key;
     char *field;
     key = strtok(copy, " ");
     field = strtok(NULL, " ");
-    printf("Key: %s \t Field: %s\n",key,field);
+
+    // find the key in our data structure
+    task_entry *found = NULL;
+    for (int i = 0; i < MAXSIZE; i++) {
+        if (!strcmp(*(data+i)->key, key)) {
+            found = data+i;
+        }
+    }
+    if (!found) return NULL;
+    if (!found->task_ptr) return NULL;
+
+    // find the field in our found entry
+    bool end = TRUE;
+    switch field{
+        case "pid": return &(found->task_ptr->pid);
+        case "inode_start": end = FALSE;
+        case "inode_end": if (!found->task_ptr->fs_ptr) return NULL;
+            if (!end) return &(found->task_ptr->fs_ptr->inode_start);
+            else return &(found->task_ptr->fs_ptr->inode_end);
+        default: break;
+    }
+    if (!found->task_ptr->vm_ptr) return NULL;
+    switch field{
+        case "paged_start": end = FALSE;
+        case "paged_end": if (!found->task_ptr->vm_ptr->paged_ptr) return NULL;
+            if (!end) return &(found->task_ptr->vm_ptr->paged_ptr->paged_start);
+            else return &(found->task_ptr->vm_ptr->paged_ptr->paged_end);
+        case "pinned_start": end = FALSE;
+        case "pinned_end": if (!found->task_ptr->vm_ptr->pinned_ptr) return NULL;
+            if (!end) return &(found->task_ptr->vm_ptr->pinned_ptr->pinned_start);
+            else return &(found->task_ptr->vm_ptr->pinned_ptr->pinned_end);
+        default: break;
+    }
     return NULL;
 }
 
