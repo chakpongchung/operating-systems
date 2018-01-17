@@ -78,7 +78,7 @@ void *locate(char *parm){
     // find the key in our data structure
     task_entry *found = NULL;
     for (int i = 0; i < MAXSIZE; i++) {
-        if (!strcmp(*(data+i)->key, key)) {
+        if (!strcmp(*(task_entry*)(data+i)->key, key)) {
             found = data+i;
         }
     }
@@ -86,12 +86,12 @@ void *locate(char *parm){
     if (!found->task_ptr) return NULL;
 
     // find the field in our found entry and return the address
-    if (!strcmp(field, "pid") return &(found->task_ptr->pid);
+    if (!strcmp(field, "pid")) return &(found->task_ptr->pid);
     if (!strncmp("inode", field, 5)){
         if (!found->task_ptr->fs_ptr) return NULL;
         if (!strcmp(field,"inode_start")) return &(found->task_ptr->fs_ptr->inode_start);
         if (!strcmp(field,"inode_end")) return &(found->task_ptr->fs_ptr->inode_end);
-    } 
+    }
     if (!found->task_ptr->vm_ptr) return NULL;
     if (!strncmp("paged", field, 5)){
         if (!found->task_ptr->vm_ptr->paged_ptr) return NULL;
