@@ -89,7 +89,7 @@ void testdata(void)
   my_fs.inode_start = (long)8888;
   my_fs.inode_end = (long)55555;
   my_paged.paged_start = (void *)malloc(1024);
-  my_paged.pinned_end = (void *)malloc(16);
+  my_pinned.pinned_end = (void *)malloc(16);
   rc = task_store(STORE, "101", &my_task);
   task_entry *entry2 = (task_entry*) rc;
   printf("Task 1 pid: %ld\n", entry->task_ptr->pid);
