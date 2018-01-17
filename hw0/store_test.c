@@ -161,9 +161,9 @@ void testdata(void)
 
   rc = task_store(LOCATE, "107 pid", NULL);
   if (rc == NULL) 
-     printf("Test 5: success\n");
+     printf("Test 6: success\n");
   else
-     printf("Test 5: failed\n");
+     printf("Test 6: failed\n");
 }
 
 /*
