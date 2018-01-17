@@ -97,7 +97,7 @@ void testdata(void)
   printf("Task 1 paged_start: %ld\n", (long)entry->my_task->vm_ptr->paged_ptr->paged_start);
   printf("Task 2 paged_start: %ld\n", (long)entry2->my_task->vm_ptr->paged_ptr->paged_start);
 
-  my_fs = NULL;
+  my_task->fs_ptr = NULL;
   rc = task_store(STORE, "101", &my_task);
   task_entry *entry2 = (task_entry*) rc;
   printf("Task 1 pid: %ld\n", entry->my_task->pid);
