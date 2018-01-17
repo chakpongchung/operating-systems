@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef int bool;
+#define TRUE 1
+#define FALSE 0
+
 #define MAXSIZE 50   // maximum number of tasks allowed
 int num_tasks = 0;   // num of tasks used
 
@@ -78,7 +82,7 @@ void *locate(char *parm){
     // find the key in our data structure
     task_entry *found = NULL;
     for (int i = 0; i < MAXSIZE; i++) {
-        if (!strcmp(*(data+i)->key, key)) {
+        if (!strcmp((*(data+i))->key, key)) {
             found = data+i;
         }
     }
@@ -87,7 +91,7 @@ void *locate(char *parm){
 
     // find the field in our found entry
     bool end = TRUE;
-    switch field{
+    switch (field){
         case "pid": return &(found->task_ptr->pid);
         case "inode_start": end = FALSE;
         case "inode_end": if (!found->task_ptr->fs_ptr) return NULL;
@@ -96,7 +100,7 @@ void *locate(char *parm){
         default: break;
     }
     if (!found->task_ptr->vm_ptr) return NULL;
-    switch field{
+    switch (field){
         case "paged_start": end = FALSE;
         case "paged_end": if (!found->task_ptr->vm_ptr->paged_ptr) return NULL;
             if (!end) return &(found->task_ptr->vm_ptr->paged_ptr->paged_start);
