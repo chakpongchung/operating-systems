@@ -25,10 +25,33 @@ void *store(char *parm, task *ptr){
     if (!data) return NULL;                     // check if init is called
     if (num_tasks == MAXSIZE - 1) return NULL;  // check maximum size exceeded
 
-    // TODO replace this with actually copying data
+    // copy task
     task *my_task;
     my_task = (task *) malloc(sizeof(task));
-    memcpy(my_task, ptr, sizeof(task));
+    *my_task = *ptr;
+    //memcpy(my_task, ptr, sizeof(task));
+    /*// copy FS
+    if (my_task->fs_ptr){
+        FS *my_fs;
+        my_fs = (FS *) malloc(sizeof(FS));
+        memcpy(my_fs, my_task->fs_ptr, sizeof(FS));
+        my_task->fs_ptr = my_fs;
+    }
+    // copy VM
+    if (my_task->vm_ptr){
+        FS *my_vm;
+        my_vm = (VM *) malloc(sizeof(VM));
+        memcpy(my_vm, my_task->vm_ptr, sizeof(VM));
+        my_task->vm_ptr = my_vm;
+        // copy paged
+        if (my_vm->paged_ptr){
+            FS *my_fs;
+            my_fs = (FS *) malloc(sizeof(FS));
+            memcpy(my_fs, ->fs_ptr, sizeof(FS));
+            my_task->fs_ptr = my_fs;
+        }
+    }
+    */
     task_entry new_entry = {.key = parm, .my_task = my_task};
     *(data+num_tasks) = new_entry;
     num_tasks += 1;
