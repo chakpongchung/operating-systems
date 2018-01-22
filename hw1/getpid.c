@@ -90,7 +90,7 @@ static ssize_t getpid_call(struct file *file, const char __user *buf,
   /* current is global for the kernel and contains a pointer to the
    * task_struct for the running process 
    */
-  call_task = current;
+  call_task = current;  // this returns a pointer to the structure of the calling task
 
   /* Use the kernel function to copy from user space to kernel space.
    */
