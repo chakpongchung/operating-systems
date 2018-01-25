@@ -77,6 +77,7 @@ void do_syscall(char *call_string)
 
   strcpy(call_buf, call_string);
 
+  // TODO - man 2 write and man 2 read to get the return codes and define those in the module
   rc = write(fp, call_buf, strlen(call_buf) + 1);
   if (rc == -1) {
      fprintf (stderr, "error writing %s\n", the_file);

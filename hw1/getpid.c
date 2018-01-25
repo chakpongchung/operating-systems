@@ -100,7 +100,7 @@ static ssize_t getpid_call(struct file *file, const char __user *buf,
 
   if (strcmp(callbuf, "getpid") != 0) { // only valid call is "getpid"
       strcpy(respbuf, "Failed: invalid operation\n");
-      printk(KERN_DEBUG "getpid: call %s will return %s\n", callbuf, respbuf);
+      printk(KERN_DEBUG "getpid: call %s will return %s\n", callbuf, respbuf);  // goes into /var/log/kern.log
       preempt_enable();
       return count;  /* write() calls return the number of bytes written */
   }
