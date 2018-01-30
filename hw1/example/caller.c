@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "getpinfo.h" /* used by both kernel module and user program */
+#include "getpid.h" /* used by both kernel module and user program */
 
 void do_syscall(char *call_string);  // does the call emulation
 

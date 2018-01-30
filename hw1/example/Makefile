@@ -1,4 +1,4 @@
-obj-m += getpinfo.o
+obj-m += getpid.o
 
 K=$(shell uname -r)
 M=$(PWD)
