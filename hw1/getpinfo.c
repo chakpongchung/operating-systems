@@ -55,6 +55,8 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
 {
   int rc;
   char callbuf[MAX_CALL];  // local (kernel) space to store call string
+  int i = 0;
+  struct task_struct *pos;
   
   // the user's write() call should not include a count that exceeds MAX_CALL
   if(count >= MAX_CALL)
@@ -90,9 +92,6 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   rc = gen_pinfo_string(respbuf, call_task);
 
   // traverse through my siblings and generate pinfo string for each of them
-  int i = 0;
-  struct task_struct *pos;
-
   list_for_each_entry(pos, &(call_task->sibling), sibling){
     if (i < MAX_SIBLINGS) {
       rc = gen_pinfo_string(respbuf, pos);
