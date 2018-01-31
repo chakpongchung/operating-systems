@@ -56,7 +56,6 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   char callbuf[MAX_CALL];  // local (kernel) space to store call string
   char resp_line[MAX_ENTRY]; // local (kernel) space for a response
 
-  pid_t cur_pid = 0;
   // the user's write() call should not include a count that exceeds MAX_CALL
   if(count >= MAX_CALL)
     return -EINVAL;  // return the invalid error code
@@ -113,6 +112,8 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
    */
 static int gen_pinfo_string(struct task_struct *my_task, char *dest)
 {
+  pid_t cur_pid = 0;
+  
   cur_pid = task_pid_nr(my_task); //Use kernel functions for access to pid for a process 
   sprintf(dest, "Current PID %d\n", cur_pid); // start forming a response in the buffer
   /*get_task_comm()
