@@ -113,11 +113,13 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
 static int gen_pinfo_string(struct task_struct *my_task, char *dest)
 {
   pid_t cur_pid = 0;
+  char *comm;
 
   cur_pid = task_pid_nr(my_task); //Use kernel functions for access to pid for a process 
   sprintf(dest, "Current PID %d\n", cur_pid); // start forming a response in the buffer
-  /*get_task_comm()
-  sprintf(resp_line, "  command %s\n");
+  comm = get_task_comm(my_task);
+  sprintf(resp_line, "  command %s\n", comm);
+  /*
   strcat(respbuf, resp_line);
   sprintf(resp_line, "  parent PID %d\n");
   strcat(respbuf, resp_line);

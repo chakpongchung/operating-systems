@@ -46,13 +46,13 @@ void main (int argc, char* argv[])
   }
 
   // use the system call to get the pid
-  my_pid = getpid();
-  fprintf(stdout, "System call getpinfo() returns %d\n", my_pid);
+  //my_pid = getpid();
+  //fprintf(stdout, "System call getpinfo() returns %d\n", my_pid);
 
   // use the kernel module to get the pid
   do_syscall("getpinfo");
 
-  fprintf(stdout, "Module getpinfo returns %s", resp_buf);
+  fprintf(stdout, "%s", resp_buf);
 
   close (fp);
 } /* end main() */
