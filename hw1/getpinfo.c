@@ -54,8 +54,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
 {
   int rc;
   char callbuf[MAX_CALL];  // local (kernel) space to store call string
-  char resp_line[MAX_ENTRY]; // local (kernel) space for a response
-
+  
   // the user's write() call should not include a count that exceeds MAX_CALL
   if(count >= MAX_CALL)
     return -EINVAL;  // return the invalid error code
@@ -68,7 +67,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   }
 
   // allocate some kernel memory for the response
-  respbuf = kmalloc(MAX_RESP, GFP_ATOMIC);
+  respbuf = kmalloc(MAX_ENTRY * MAX_SIBLINGS, GFP_ATOMIC);
   if (respbuf == NULL) {  // test if allocation failed
      preempt_enable(); 
      return -ENOSPC;
@@ -112,6 +111,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
    */
 static int gen_pinfo_string(struct task_struct *my_task, char *dest)
 {
+  char resp_line[MAX_LINE]; // local (kernel) space for a response (before cat into dest)
   pid_t cur_pid = 0;
   char *comm;
 
@@ -119,8 +119,8 @@ static int gen_pinfo_string(struct task_struct *my_task, char *dest)
   sprintf(dest, "Current PID %d\n", cur_pid); // start forming a response in the buffer
   comm = get_task_comm(my_task);
   sprintf(resp_line, "  command %s\n", comm);
+  strcat(dest, resp_line);
   /*
-  strcat(respbuf, resp_line);
   sprintf(resp_line, "  parent PID %d\n");
   strcat(respbuf, resp_line);
   sprintf(resp_line, "  state %d\n");

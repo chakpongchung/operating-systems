@@ -26,7 +26,7 @@ void do_syscall(char *call_string);  // does the call emulation
 int fp;
 char the_file[256] = "/sys/kernel/debug/";
 char call_buf[MAX_CALL];  /* no call string can be longer */
-char resp_buf[MAX_RESP];  /* no response strig can be longer */
+char resp_buf[MAX_ENTRY * MAX_SIBLINGS];  /* no response string can be longer */
 
 void main (int argc, char* argv[])
 {
