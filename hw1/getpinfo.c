@@ -129,11 +129,13 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   
   sprintf(resp_line, "  state %ld\n", tsk->state);
   strcat(respbuf, resp_line);
+  
+  sprintf(resp_line, "  flags %x\n", tsk->flags);
+  strcat(respbuf, resp_line);
+  
+  sprintf(resp_line, "  priority %d\n", tsk->normal_prio);
+  strcat(respbuf, resp_line);
   /*
-  sprintf(resp_line, "  flags %x\n");
-  strcat(respbuf, resp_line);
-  sprintf(resp_line, "  priority %d\n");
-  strcat(respbuf, resp_line);
   sprintf(resp_line, "  VM areas %d\n");
   strcat(respbuf, resp_line);
   sprintf(resp_line, "  VM shared %d\n");
