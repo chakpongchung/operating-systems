@@ -138,7 +138,7 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   strcat(respbuf, resp_line);
 
   // Virtual Memory critical section
-  down_read(tsk->mm->mmap_sem);
+  down_read(&(tsk->mm->mmap_sem));
   sprintf(resp_line, "  VM areas %d\n", tsk->mm->map_count);
   strcat(respbuf, resp_line);
   
@@ -154,7 +154,7 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   sprintf(resp_line, "  VM total %ld\n", tsk->mm->total_vm);
   strcat(respbuf, resp_line);
   
-  up_read(tsk->mm->mmap_sem);
+  up_read(&(tsk->mm->mmap_sem));
   // End Virtual memory critical section
 
   return 0;
