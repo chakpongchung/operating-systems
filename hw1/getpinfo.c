@@ -34,7 +34,7 @@ char *respbuf;  // points to memory allocated to return the result
 int file_value;
 struct dentry *dir, *file;  // used to set up debugfs file name
 
-static int gen_pinfo_string(struct task_struct *my_task, char *dest);
+static int gen_pinfo_string(char *buf, struct task_struct *tsk);
 
 /* This function emulates the handling of a system call by
  * accessing the call string from the user program, executing
@@ -86,7 +86,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   }
 
   // generate the pinfo string for the current process
-  rc = gen_pinfo_string(call_task, respbuf);
+  rc = gen_pinfo_string(respbuf, call_task);
 
   // cleanup code at end
   printk(KERN_DEBUG "getpinfo: call %s will return %s", callbuf, respbuf);
@@ -109,17 +109,17 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
    *   VM stack 34         (stack_vm)
    *   VM total 507        (total_vm)
    */
-static int gen_pinfo_string(struct task_struct *my_task, char *dest)
+static int gen_pinfo_string(char *buf, struct task_struct *tsk)
 {
-  char resp_line[MAX_LINE]; // local (kernel) space for a response (before cat into dest)
+  char resp_line[MAX_LINE]; // local (kernel) space for a response (before cat into buf)
   pid_t cur_pid = 0;
   char *comm;
 
-  cur_pid = task_pid_nr(my_task); //Use kernel functions for access to pid for a process 
-  sprintf(dest, "Current PID %d\n", cur_pid); // start forming a response in the buffer
-  comm = get_task_comm(my_task);
+  cur_pid = task_pid_nr(tsk); //Use kernel functions for access to pid for a process 
+  sprintf(buf, "Current PID %d\n", cur_pid); // start forming a response in the buffer
+  get_task_comm(comm, tsk);
   sprintf(resp_line, "  command %s\n", comm);
-  strcat(dest, resp_line);
+  strcat(buf, resp_line);
   /*
   sprintf(resp_line, "  parent PID %d\n");
   strcat(respbuf, resp_line);
