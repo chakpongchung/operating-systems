@@ -52,7 +52,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
 {
   int rc;
   char callbuf[MAX_CALL];  // local (kernel) space to store call string
-  char resp_line[MAX_LINE]; // local (kernel) space for a response
+  char resp_line[MAX_ENTRY]; // local (kernel) space for a response
 
   pid_t cur_pid = 0;
   // the user's write() call should not include a count that exceeds MAX_CALL
