@@ -86,7 +86,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   }
 
   // generate the pinfo string for the current process
-  rc = gen_pinfo_string(current, respbuf);
+  rc = gen_pinfo_string(call_task, respbuf);
 
   // cleanup code at end
   printk(KERN_DEBUG "getpinfo: call %s will return %s", callbuf, respbuf);
@@ -109,7 +109,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
    *   VM stack 34         (stack_vm)
    *   VM total 507        (total_vm)
    */
-static int gen_pinfo_string(task_struct *my_task, char *dest)
+static int gen_pinfo_string(struct task_struct *my_task, char *dest)
 {
   cur_pid = task_pid_nr(my_task); //Use kernel functions for access to pid for a process 
   sprintf(dest, "Current PID %d\n", cur_pid); // start forming a response in the buffer
