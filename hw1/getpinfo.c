@@ -34,6 +34,8 @@ char *respbuf;  // points to memory allocated to return the result
 int file_value;
 struct dentry *dir, *file;  // used to set up debugfs file name
 
+static int gen_pinfo_string(struct task_struct *my_task, char *dest);
+
 /* This function emulates the handling of a system call by
  * accessing the call string from the user program, executing
  * the requested function and preparing a response.
