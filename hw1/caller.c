@@ -2,9 +2,9 @@
  * A simple user space program to illustrate calling an
  * emulated "system call" in programming assignments in
  * COMP 790-042.  It opens the debugfs file used for calling
- * the getpid kernel module, requests the pid of the calling
+ * the getpinfo kernel module, requests the pid of the calling
  * process, and outputs the result.  It also outputs the 
- * result from the regular Linux getpid() system call so the
+ * result from the regular Linux getpinfo() system call so the
  * two results can be compared.
  */
 
@@ -46,13 +46,13 @@ void main (int argc, char* argv[])
   }
 
   // use the system call to get the pid
-  my_pid = getpid();
-  fprintf(stdout, "System call getpid() returns %d\n", my_pid);
+  my_pid = getpinfo();
+  fprintf(stdout, "System call getpinfo() returns %d\n", my_pid);
 
   // use the kernel module to get the pid
-  do_syscall("getpid");
+  do_syscall("getpinfo");
 
-  fprintf(stdout, "Module getpid returns %s", resp_buf);
+  fprintf(stdout, "Module getpinfo returns %s", resp_buf);
 
   close (fp);
 } /* end main() */

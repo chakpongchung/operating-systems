@@ -10,6 +10,7 @@
 #include <linux/uaccess.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
+#include <linux/mm_types.h>
 
 #include "getpinfo.h" /* used by both kernel module and user program 
                      * to define shared parameters including the
@@ -46,7 +47,7 @@ struct dentry *dir, *file;  // used to set up debugfs file name
  * this function returns.
  */
 
-static ssize_t getpid_call(struct file *file, const char __user *buf,
+static ssize_t getpinfo_call(struct file *file, const char __user *buf,
                                 size_t count, loff_t *ppos)
 {
   int rc;
@@ -54,22 +55,12 @@ static ssize_t getpid_call(struct file *file, const char __user *buf,
   char resp_line[MAX_LINE]; // local (kernel) space for a response
 
   pid_t cur_pid = 0;
-
-  /* the user's write() call should not include a count that exceeds
-   * the size of the module's buffer for the call string.
-   */
-
+  // the user's write() call should not include a count that exceeds MAX_CALL
   if(count >= MAX_CALL)
     return -EINVAL;  // return the invalid error code
-
-  /* The preempt_disable() and preempt_enable() functions are used in the
-   * kernel for preventing preemption.  They are used here to protect
-   * state held in the call_task and respbuf variables
-   */
   
-  preempt_disable();  // prevents re-entry possible if one process 
-                      // preempts another and it also calls this module
-
+  // Prevent preemption.  
+  preempt_disable();  
   if (call_task != NULL) { // a different process is expecting a return
      preempt_enable();  // must be enabled before return
      return -EAGAIN;
@@ -77,50 +68,74 @@ static ssize_t getpid_call(struct file *file, const char __user *buf,
 
   // allocate some kernel memory for the response
   respbuf = kmalloc(MAX_RESP, GFP_ATOMIC);
-  if (respbuf == NULL) {  // always test if allocation failed
+  if (respbuf == NULL) {  // test if allocation failed
      preempt_enable(); 
      return -ENOSPC;
   }
-
   strcpy(respbuf,""); /* initialize buffer with null string */
-
-  /* current is global for the kernel and contains a pointer to the
-   * task_struct for the running process 
-   */
+  
   call_task = current;  // this returns a pointer to the structure of the calling task
-
-  /* Use the kernel function to copy from user space to kernel space.
-   */
-
   rc = copy_from_user(callbuf, buf, count);
   callbuf[MAX_CALL - 1] = '\0'; /* make sure it is a terminated string */
 
-  if (strcmp(callbuf, "getpid") != 0) { // only valid call is "getpid"
+  if (strcmp(callbuf, "getpinfo") != 0) { // only valid call is "getpinfo"
       strcpy(respbuf, "Failed: invalid operation\n");
-      printk(KERN_DEBUG "getpid: call %s will return %s\n", callbuf, respbuf);  // goes into /var/log/kern.log
+      printk(KERN_DEBUG "getpinfo: call %s will return %s\n", callbuf, respbuf);  // goes into /var/log/kern.log
       preempt_enable();
       return count;  /* write() calls return the number of bytes written */
   }
 
-  sprintf(respbuf, "Success:\n"); // start forming a response in the buffer
+  // generate the pinfo string for the current process
+  rc = gen_pinfo_string(current, respbuf);
 
-  /* Use kernel functions for access to pid for a process 
-   */
-
-  cur_pid = task_pid_nr(current);
-
-  sprintf(resp_line, "     Current PID %d\n", cur_pid);
-  strcat(respbuf, resp_line); // finish the response
-
-  /* Here the response has been generated and is ready for the user
-   * program to access it by a read() call.
-   */
-
-  printk(KERN_DEBUG "getpid: call %s will return %s", callbuf, respbuf);
+  // cleanup code at end
+  printk(KERN_DEBUG "getpinfo: call %s will return %s", callbuf, respbuf);
   preempt_enable();
-  
   *ppos = 0;  /* reset the offset to zero */
   return count;  /* write() calls return the number of bytes */
+}
+
+  /* This function parses the task_struct and formats a string with the info
+   * The string will include:
+   * Current PID 5234
+   *   command caller      (comm)
+   *   parent PID 1954     (real_parent)
+   *   state 0             (state)
+   *   flags 0x00406000    (flags) in hex
+   *   priority 120        (normal_prio)
+   *   VM areas 15         (VMAs) (map_count)
+   *   VM shared 464       (shared_vm)
+   *   VM exec 457         (exec_vm)
+   *   VM stack 34         (stack_vm)
+   *   VM total 507        (total_vm)
+   */
+static int gen_pinfo_string(task_struct *my_task, char *dest)
+{
+  cur_pid = task_pid_nr(my_task); //Use kernel functions for access to pid for a process 
+  sprintf(dest, "Current PID %d\n", cur_pid); // start forming a response in the buffer
+  /*get_task_comm()
+  sprintf(resp_line, "  command %s\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  parent PID %d\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  state %d\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  flags %x\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  priority %d\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  VM areas %d\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  VM shared %d\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  VM exec %d\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  VM stack %d\n");
+  strcat(respbuf, resp_line);
+  sprintf(resp_line, "  VM total %d\n");
+  strcat(respbuf, resp_line);
+  */
+  return 0;
 }
 
 /* This function emulates the return from a system call by returning
@@ -133,7 +148,7 @@ static ssize_t getpid_call(struct file *file, const char __user *buf,
  * function returns.
  */
 
-static ssize_t getpid_return(struct file *file, char __user *userbuf,
+static ssize_t getpinfo_return(struct file *file, char __user *userbuf,
                                 size_t count, loff_t *ppos)
 {
   int rc; 
@@ -141,7 +156,7 @@ static ssize_t getpid_return(struct file *file, char __user *userbuf,
   preempt_disable(); // protect static variables
 
   if (current != call_task) { // return response only to the process making
-                              // the getpid request
+                              // the getpinfo request
      preempt_enable();
      return 0;  // a return of zero on a read indicates no data returned
   }
@@ -176,8 +191,8 @@ static ssize_t getpid_return(struct file *file, char __user *userbuf,
 // Defines the functions in this module that are executed
 // for user read() and write() calls to the debugfs file
 static const struct file_operations my_fops = {
-        .read = getpid_return,
-        .write = getpid_call,
+        .read = getpinfo_return,
+        .write = getpinfo_call,
 };
 
 /* This function is called when the module is loaded into the kernel
@@ -186,14 +201,14 @@ static const struct file_operations my_fops = {
  * in user space and the kernel module.
  */
 
-static int __init getpid_module_init(void)
+static int __init getpinfo_module_init(void)
 {
 
   /* create an in-memory directory to hold the file */
 
   dir = debugfs_create_dir(dir_name, NULL);
   if (dir == NULL) {
-    printk(KERN_DEBUG "getpid: error creating %s directory\n", dir_name);
+    printk(KERN_DEBUG "getpinfo: error creating %s directory\n", dir_name);
      return -ENODEV;
   }
 
@@ -203,11 +218,11 @@ static int __init getpid_module_init(void)
 
   file = debugfs_create_file(file_name, 0666, dir, &file_value, &my_fops);
   if (file == NULL) {
-    printk(KERN_DEBUG "getpid: error creating %s file\n", file_name);
+    printk(KERN_DEBUG "getpinfo: error creating %s file\n", file_name);
      return -ENODEV;
   }
 
-  printk(KERN_DEBUG "getpid: created new debugfs directory and file\n");
+  printk(KERN_DEBUG "getpinfo: created new debugfs directory and file\n");
 
   return 0;
 }
@@ -217,7 +232,7 @@ static int __init getpid_module_init(void)
  * freeing any memory still allocated.
  */
 
-static void __exit getpid_module_exit(void)
+static void __exit getpinfo_module_exit(void)
 {
   debugfs_remove(file);
   debugfs_remove(dir);
@@ -227,6 +242,6 @@ static void __exit getpid_module_exit(void)
 
 /* Declarations required in building a module */
 
-module_init(getpid_module_init);
-module_exit(getpid_module_exit);
+module_init(getpinfo_module_init);
+module_exit(getpinfo_module_exit);
 MODULE_LICENSE("GPL");
