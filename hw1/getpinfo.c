@@ -90,9 +90,15 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   rc = gen_pinfo_string(respbuf, call_task);
 
   // traverse through my siblings and generate pinfo string for each of them
-  //list_for_each_entry(){
+  int i = 1;
+  struct task_struct *pos;
 
-  //}
+  list_for_each_entry(pos, call_task->sibling, sibling){
+    if (i < MAX_SIBLINGS) {
+      rc = gen_pinfo_string(respbuf, call_task);
+      i++;
+    } else break;
+  }
 
   // cleanup code at end
   printk(KERN_DEBUG "getpinfo: call %s will return %s", callbuf, respbuf);
