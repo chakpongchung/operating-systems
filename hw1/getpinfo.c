@@ -115,7 +115,6 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   pid_t cur_pid = 0;
   pid_t par_pid = 0;
   char comm[sizeof(tsk->comm)+1];
-  int size;
 
   cur_pid = task_pid_nr(tsk); //Use kernel functions for access to pid for a process 
   sprintf(buf, "Current PID %d\n", cur_pid); // start forming a response in the buffer
@@ -127,9 +126,10 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   par_pid = task_pid_nr(tsk->real_parent);
   sprintf(resp_line, "  parent PID %d\n", par_pid);
   strcat(respbuf, resp_line);
-  /*
-  sprintf(resp_line, "  state %d\n");
+  
+  sprintf(resp_line, "  state %ld\n", tsk->state);
   strcat(respbuf, resp_line);
+  /*
   sprintf(resp_line, "  flags %x\n");
   strcat(respbuf, resp_line);
   sprintf(resp_line, "  priority %d\n");
