@@ -103,7 +103,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
    *   state 0             (state)
    *   flags 0x00406000    (flags) in hex
    *   priority 120        (normal_prio)
-   *   VM areas 15         (VMAs) (map_count)
+   *   VM areas 15         (map_count)
    *   VM shared 464       (shared_vm)
    *   VM exec 457         (exec_vm)
    *   VM stack 34         (stack_vm)
@@ -130,26 +130,27 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   sprintf(resp_line, "  state %ld\n", tsk->state);
   strcat(respbuf, resp_line);
   
-  sprintf(resp_line, "  flags %x\n", tsk->flags);
+  sprintf(resp_line, "  flags 0x%08x\n", tsk->flags);
   strcat(respbuf, resp_line);
   
   sprintf(resp_line, "  priority %d\n", tsk->normal_prio);
   strcat(respbuf, resp_line);
-  /*
-  sprintf(resp_line, "  VM areas %d\n");
+
+  sprintf(resp_line, "  VM areas %d\n", tsk->mm->map_count);
   strcat(respbuf, resp_line);
-  sprintf(resp_line, "  VM shared %d\n");
+  
+  sprintf(resp_line, "  VM shared %ld\n", tsk->mm->shared_vm);
   strcat(respbuf, resp_line);
-  sprintf(resp_line, "  VM exec %d\n");
+
+  sprintf(resp_line, "  VM exec %ld\n", tsk->mm->exec_vm);
   strcat(respbuf, resp_line);
-  sprintf(resp_line, "  VM stack %d\n");
+
+  sprintf(resp_line, "  VM stack %ld\n", tsk->mm->stack_vm);
   strcat(respbuf, resp_line);
-  sprintf(resp_line, "  VM total %d\n");
+
+  sprintf(resp_line, "  VM total %ld\n", tsk->mm->total_vm);
   strcat(respbuf, resp_line);
-  //size = sizeof(tsk->comm);
-  //sprintf(resp_line, "  sizeof(tsk->comm): %d\n", size);
-  //strcat(buf, resp_line);
-  */
+
   return 0;
 }
 
