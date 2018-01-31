@@ -130,6 +130,7 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
 
   cur_pid = task_pid_nr(tsk); //Use kernel functions for access to pid for a process 
   sprintf(resp_line, "Current PID %d\n", cur_pid); // start forming a response in the buffer
+  printk(KERN_DEBUG "getpinfo: starting  response for pid %d\n", cur_pid);  // goes into /var/log/kern.log
   strcat(buf, resp_line);
 
   get_task_comm(comm, tsk);  // use kernel function for access to command name
@@ -149,6 +150,7 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   sprintf(resp_line, "  priority %d\n", tsk->normal_prio);
   strcat(respbuf, resp_line);
 
+  printk(KERN_DEBUG "getpinfo: entering critical section for pid %d\n", cur_pid);  // goes into /var/log/kern.log
   // Virtual Memory critical section
   down_read(&(tsk->mm->mmap_sem));
   sprintf(resp_line, "  VM areas %d\n", tsk->mm->map_count);
@@ -168,6 +170,7 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   
   up_read(&(tsk->mm->mmap_sem));
   // End Virtual memory critical section
+  printk(KERN_DEBUG "getpinfo: exited critical section for pid %d\n", cur_pid);  // goes into /var/log/kern.log
 
   return 0;
 }
