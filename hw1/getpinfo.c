@@ -89,6 +89,11 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   // generate the pinfo string for the current process
   rc = gen_pinfo_string(respbuf, call_task);
 
+  // traverse through my siblings and generate pinfo string for each of them
+  //list_for_each_entry(){
+
+  //}
+
   // cleanup code at end
   printk(KERN_DEBUG "getpinfo: call %s will return %s", callbuf, respbuf);
   preempt_enable();
@@ -118,7 +123,8 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   char comm[sizeof(tsk->comm)+1];
 
   cur_pid = task_pid_nr(tsk); //Use kernel functions for access to pid for a process 
-  sprintf(buf, "Current PID %d\n", cur_pid); // start forming a response in the buffer
+  sprintf(resp_line, "Current PID %d\n", cur_pid); // start forming a response in the buffer
+  strcat(buf, resp_line);
 
   get_task_comm(comm, tsk);  // use kernel function for access to command name
   sprintf(resp_line, "  command %s\n", comm);
