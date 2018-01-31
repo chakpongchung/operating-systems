@@ -113,17 +113,17 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
 {
   char resp_line[MAX_LINE]; // local (kernel) space for a response (before cat into buf)
   pid_t cur_pid = 0;
-  char *comm;
+  char comm[sizeof(tsk->comm)+1];
   int size;
 
   cur_pid = task_pid_nr(tsk); //Use kernel functions for access to pid for a process 
   sprintf(buf, "Current PID %d\n", cur_pid); // start forming a response in the buffer
-  size = sizeof(tsk->comm);
-  sprintf(resp_line, "  sizeof(tsk->comm): %d", size);
-  strcat(buf, resp_line);
-  //get_task_comm(comm, tsk);
-  //sprintf(resp_line, "  command %s\n", comm);
+  //size = sizeof(tsk->comm);
+  //sprintf(resp_line, "  sizeof(tsk->comm): %d\n", size);
   //strcat(buf, resp_line);
+  get_task_comm(comm, tsk);
+  sprintf(resp_line, "  command %s\n", comm);
+  strcat(buf, resp_line);
   /*
   sprintf(resp_line, "  parent PID %d\n");
   strcat(respbuf, resp_line);
