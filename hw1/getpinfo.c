@@ -11,6 +11,7 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/mm_types.h>
+#include <linux/rwsem.h>
 
 #include "getpinfo.h" /* used by both kernel module and user program 
                      * to define shared parameters including the
@@ -119,7 +120,7 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   cur_pid = task_pid_nr(tsk); //Use kernel functions for access to pid for a process 
   sprintf(buf, "Current PID %d\n", cur_pid); // start forming a response in the buffer
 
-  get_task_comm(comm, tsk);
+  get_task_comm(comm, tsk);  // use kernel function for access to command name
   sprintf(resp_line, "  command %s\n", comm);
   strcat(buf, resp_line);
   
@@ -136,6 +137,8 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
   sprintf(resp_line, "  priority %d\n", tsk->normal_prio);
   strcat(respbuf, resp_line);
 
+  // Virtual Memory critical section
+  down_read(tsk->mm->mmap_sem);
   sprintf(resp_line, "  VM areas %d\n", tsk->mm->map_count);
   strcat(respbuf, resp_line);
   
@@ -150,6 +153,9 @@ static int gen_pinfo_string(char *buf, struct task_struct *tsk)
 
   sprintf(resp_line, "  VM total %ld\n", tsk->mm->total_vm);
   strcat(respbuf, resp_line);
+  
+  up_read(tsk->mm->mmap_sem);
+  // End Virtual memory critical section
 
   return 0;
 }
