@@ -95,7 +95,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
 
   list_for_each_entry(pos, &(call_task->sibling), sibling){
     if (i < MAX_SIBLINGS) {
-      rc = gen_pinfo_string(respbuf, call_task);
+      rc = gen_pinfo_string(respbuf, pos);
       i++;
     } else break;
   }
