@@ -46,7 +46,7 @@ void main (int argc, char* argv[])
   }
 
   // use the system call to get the pid
-  my_pid = getpinfo();
+  my_pid = getpid();
   fprintf(stdout, "System call getpinfo() returns %d\n", my_pid);
 
   // use the kernel module to get the pid

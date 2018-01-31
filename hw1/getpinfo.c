@@ -113,7 +113,7 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
 static int gen_pinfo_string(struct task_struct *my_task, char *dest)
 {
   pid_t cur_pid = 0;
-  
+
   cur_pid = task_pid_nr(my_task); //Use kernel functions for access to pid for a process 
   sprintf(dest, "Current PID %d\n", cur_pid); // start forming a response in the buffer
   /*get_task_comm()
@@ -244,7 +244,6 @@ static void __exit getpinfo_module_exit(void)
 }
 
 /* Declarations required in building a module */
-
 module_init(getpinfo_module_init);
 module_exit(getpinfo_module_exit);
 MODULE_LICENSE("GPL");
