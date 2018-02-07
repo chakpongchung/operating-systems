@@ -75,7 +75,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
 {
   int rc;
   char callbuf[MAX_CALL];  // local (kernel) space to store call string
-  char *ret;
+  char ret[3];
   char *token, *end;
   char oper[MAX_CALL];
   int param1, param2;
@@ -134,11 +134,17 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   if (strcmp(oper, "event_create") == 0) {
     rc = event_create(param1);
   } else if (strcmp(oper, "event_wait") == 0) {
-    rc = event_wait()
+    rc = event_wait(param1, param2);
+  } else if (strcmp(oper, "event_signal") == 0) {
+    rc = event_signal(param1);
+  } else if (strcmp(oper, "event_destroy") == 0) {
+    rc = event_destroy(param1);
+  } else{ // invalid call
+    rc = -1;
   }
 
   // convert rc to a string and store it for the read() call later on
-
+  sprintf(ret, "%d", rc);
 
   // cleanup code at end
   printk(KERN_DEBUG "barrier_sync: call %s will return %s", callbuf, ret);
