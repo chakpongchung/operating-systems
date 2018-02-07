@@ -181,7 +181,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   } else if (strcmp(oper, "event_destroy") == 0) {
     rc = event_destroy(param1);
   } else{ // invalid call
-    rc = -1;
+    rc = -100;
   }
 
   // store rc for the read() call later on

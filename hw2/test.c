@@ -92,9 +92,10 @@ void do_syscall(char *call_string)
      exit (-1);
   }*/
 
-  rc = read(fp, resp_buf, sizeof(resp_buf));
+  /*rc = read(fp, resp_buf, sizeof(resp_buf));
   fprintf(stdout, "Response: '%s' - rc: %d\n", call_string, rc);
   fflush(stdout);
+  */
   /*if (rc == -1) {
      fprintf (stderr, "error reading %s\n", the_file);
      fflush(stderr);
