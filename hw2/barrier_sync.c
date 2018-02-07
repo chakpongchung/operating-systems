@@ -79,7 +79,6 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   char *token, *end;
   char oper[MAX_CALL];
   int param1, param2;
-  long temp;
 
   if(count >= MAX_CALL)  // the user's write() call should not include a count that exceeds MAX_CALL
     return -EINVAL;  // return the invalid error code
@@ -90,7 +89,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   callbuf[MAX_CALL - 1] = '\0'; /* make sure it is a terminated string */
 
   // Tokenize the call string 
-  end = call_buf
+  end = callbuf;
   token = strsep(&end, " ");  // grab the first token (operator)
   if (token) { strcpy(oper, token); } // copy the token 
   else {
@@ -101,15 +100,13 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   }
   token = strsep(&end, " ");  // grab the second token (integer-1)
   if (token) {
-      //convert the parameter to int
-      temp = strtol(token, endptr, 10);  // attempt to convert to a long
-      if (*endptr != token) { param1 = (int) temp; } // if success, convert to int
-      else {
-          // it wasn't an integer
+      rc = kstrtoint(token, 10, &param1);  //convert the parameter to int
+      if (rc != 0) {         // it wasn't an integer
           printk(KERN_DEBUG "barrier_sync: second argument '%s' must be integer", token);
           preempt_enable();  // clear the disable flag
           return -EINVAL;
       }
+  }
   else {
     // input call improperly formatted
     printk(KERN_DEBUG "barrier_sync: input call '%s %s' improperly formatted", token, callbuf);
@@ -118,14 +115,11 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   }
   token = strsep(&end, " ");  // grab the third token (integer-2)
   if (token) {  // This one is optional, so no eed to throw an error, unless there are more tokens
-      //convert the parameter to int
-      temp = strtol(token, endptr, 10);  // attempt to convert to a long
-      if (*endptr != token) { param2 = (int) temp; } // if success, convert to int
-      else {
-        // it wasn't an integer
-        printk(KERN_DEBUG "barrier_sync: third argument '%s' must be integer", token);
-        preempt_enable();  // clear the disable flag
-        return -EINVAL;
+      rc = kstrtoint(token, 10, &param1);  //convert the parameter to int
+      if (rc != 0) {         // it wasn't an integer
+          printk(KERN_DEBUG "barrier_sync: second argument '%s' must be integer", token);
+          preempt_enable();  // clear the disable flag
+          return -EINVAL;
       }
     token = strsep(&end, " ");
     if (token) {
@@ -211,8 +205,9 @@ static int __init barrier_sync_module_init(void) {
 static void __exit barrier_sync_module_exit(void) {
   debugfs_remove(file);
   debugfs_remove(dir);
-  if (respbuf != NULL)
-     kfree(respbuf);
+  //ToDo clean up any memory allocated for queues and responses
+  //if (respbuf != NULL)
+  //   kfree(respbuf);
 }
 
 /* Declarations required in building a module */
