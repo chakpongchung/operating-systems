@@ -171,7 +171,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   
 
   // cleanup code at end
-  printk(KERN_DEBUG "barrier_sync: call %s will return %s", callbuf, ret);
+  printk(KERN_DEBUG "barrier_sync: call %s will return %d", callbuf, rc);
   preempt_enable();  // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
   return rc; // For Debugging
