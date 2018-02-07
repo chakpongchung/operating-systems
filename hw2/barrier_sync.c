@@ -28,8 +28,9 @@ completion, the module should return a character string containing only the <int
 value from the caller input string. If the operation fails for any reason, it should return
 a string containing only the value -1. */
 static int event_create(int queue){
+  if (queues[queue]) return -5;
   init_waitqueue_head(&queues[queue]);
-  return sizeof(queues);
+  return queue;
 }
 
 /*  The <integer-1> parameter is the character representation of the
@@ -70,7 +71,7 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_signal(int queue){
-  //wake_up();
+  //wake_up(&(queues[queue]));
   return 3;
 }
 
@@ -83,7 +84,7 @@ module should return a character string containing only the <integer-1> value fr
 the caller input string. If the operation fails for any reason, it should return a string
 containing only the value -1. */
 static int event_destroy(int queue){
-
+  //wake_up_all(&(queues[queue]));
   return 4;
 }
 
