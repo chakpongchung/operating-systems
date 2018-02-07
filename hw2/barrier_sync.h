@@ -5,3 +5,4 @@ char file_name[] = "call";
 
 #define MAX_EVENTS 100 // characters in call request string
 #define MAX_CALL 100 // characters in call request string
+#define MAX_RESP 100 // characters in call request string
