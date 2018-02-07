@@ -26,7 +26,7 @@ void do_syscall(char *call_string);  // does the call emulation
 int fp;
 char the_file[256] = "/sys/kernel/debug/";
 char call_buf[MAX_CALL];  /* no call string can be longer */
-char resp_buf[MAX_ENTRY * MAX_SIBLINGS];  /* no response string can be longer */
+char resp_buf[MAX_RESP];  /* no response string can be longer */
 
 void main (int argc, char* argv[])
 {
@@ -73,7 +73,6 @@ void do_syscall(char *call_string)
 
   strcpy(call_buf, call_string);
 
-  // TODO - man 2 write and man 2 read to get the return codes and define those in the module
   rc = write(fp, call_buf, strlen(call_buf) + 1);
   fprintf(stdout, "%d", rc);
   if (rc == -1) {
