@@ -85,7 +85,7 @@ void do_syscall(char *call_string)
   strcpy(call_buf, call_string);
 
   rc = write(fp, call_buf, strlen(call_buf) + 1);
-  fprintf(stdout, "Call: '%s' \t- rc: %d \t- errno: %d\n", call_string, rc, errno);
+  fprintf(stdout, "Call: '%s'     \t- rc: %d \t- errno: %d\n", call_string, rc, errno);
   fflush(stdout);
   /*if (rc == -1) {
      fprintf (stderr, "error writing %s\n", the_file);
