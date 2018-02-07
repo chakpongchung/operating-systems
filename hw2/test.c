@@ -83,7 +83,7 @@ void do_syscall(char *call_string)
   strcpy(call_buf, call_string);
 
   rc = write(fp, call_buf, strlen(call_buf) + 1);
-  fprintf(stdout, "Call: '%s' - rc: %d", call_string, rc);
+  fprintf(stdout, "Call: '%s' - rc: %d\n", call_string, rc);
   fflush(stdout);
   /*if (rc == -1) {
      fprintf (stderr, "error writing %s\n", the_file);
@@ -92,7 +92,7 @@ void do_syscall(char *call_string)
   }*/
 
   rc = read(fp, resp_buf, sizeof(resp_buf));
-  fprintf(stdout, "Response: '%s' - rc: %d", resp_buf, rc);
+  fprintf(stdout, "Response: '%s' - rc: %d\n", call_string, rc);
   fflush(stdout);
   /*if (rc == -1) {
      fprintf (stderr, "error reading %s\n", the_file);
