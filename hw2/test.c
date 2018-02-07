@@ -46,15 +46,18 @@ void main (int argc, char* argv[])
   }
 
   // Call the module with the call string
-  do_syscall("getpinfo");
+  do_syscall("getpinfo 0 0");
   do_syscall("event_create");
   do_syscall("event_create a");
   do_syscall("event_create 0");
   do_syscall("event_create 0 a");
   do_syscall("event_create 0 1");
   do_syscall("event_create 0 1 a");
+  do_syscall("event_wait 0 1");
+  do_syscall("event_signal 0");
+  do_syscall("event_destroy 0");
 
-  fprintf(stdout, "%s", resp_buf);
+  //fprintf(stdout, "%s", resp_buf);
 
   close (fp);
 } /* end main() */
@@ -82,18 +85,19 @@ void do_syscall(char *call_string)
   rc = write(fp, call_buf, strlen(call_buf) + 1);
   fprintf(stdout, "Call: '%s' - rc: %d", call_string, rc);
   fflush(stdout);
-  if (rc == -1) {
+  /*if (rc == -1) {
      fprintf (stderr, "error writing %s\n", the_file);
      fflush(stderr);
-     //exit (-1);
-  }
+     exit (-1);
+  }*/
 
   rc = read(fp, resp_buf, sizeof(resp_buf));
-  fprintf(stdout, "Response: '%s' - rc: %d", call_string, rc);
+  fprintf(stdout, "Response: '%s' - rc: %d", resp_buf, rc);
   fflush(stdout);
-  if (rc == -1) {
+  /*if (rc == -1) {
      fprintf (stderr, "error reading %s\n", the_file);
      fflush(stderr);
      //exit (-1);
   }
+  */
 }

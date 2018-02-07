@@ -17,6 +17,9 @@
 int file_value;
 struct dentry *dir, *file;  // used to set up debugfs file name
 
+// set up array of wait queues
+wait_queue_head_t queues[MAX_EVENTS];
+
 /* The <integer-1> parameter is the character representation of the
 integer value to be assigned as the event identifier for a new event. An attempt to create
 an event using an already existing identifier is an error. This call is used to instantiate a
@@ -25,8 +28,8 @@ completion, the module should return a character string containing only the <int
 value from the caller input string. If the operation fails for any reason, it should return
 a string containing only the value -1. */
 static int event_create(int queue){
-
-    return 0;
+  init_waitqueue_head(&queues[queue]);
+  return sizeof(queues);
 }
 
 /*  The <integer-1> parameter is the character representation of the
@@ -42,8 +45,22 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_wait(int queue, int exclusive){
-
-    return 0;
+  /*
+  if (exclusive) {
+    add_wait_queue_exclusive(q, &wait);
+    prepare_to_wait_exclusive(&q, &wait, TASK_INTERRUPTIBLE);
+  } else {
+    add_wait_queue(q, &wait);
+    prepare_to_wait(&q, &wait, TASK_INTERRUPTIBLE);
+  }
+  
+  preempt_enable();
+  // call schedule() here
+  schedule();
+  preempt_disable();
+  finish_wait(&q, &wait);
+  */
+  return 0;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -53,8 +70,8 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_signal(int queue){
-
-    return 0;
+  wake_up();
+  return 0;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -67,7 +84,7 @@ the caller input string. If the operation fails for any reason, it should return
 containing only the value -1. */
 static int event_destroy(int queue){
 
-    return 0;
+  return 0;
 }
 
 static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
@@ -75,7 +92,6 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
 {
   int rc;
   char callbuf[MAX_CALL];  // local (kernel) space to store call string
-  char ret[3];
   char *token, *end;
   char oper[MAX_CALL];
   int param1, param2;
@@ -89,6 +105,14 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   callbuf[MAX_CALL - 1] = '\0'; /* make sure it is a terminated string */
 
   // Tokenize the call string 
+  /* Apparently I could have replaced this entire section with the 
+     following sscanf(). 
+     So much time wasted here!!! - live and learn
+  rc = sscanf(callbuff, "%s %d %d", oper, &param1, &param2);
+  if (rc != 2 && rc != 3){
+    // do error stuff here
+  }
+  */
   end = callbuf;
   token = strsep(&end, " ");  // grab the first token (operator)
   if (token) { strcpy(oper, token); } // copy the token 
@@ -143,8 +167,8 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
     rc = -1;
   }
 
-  // convert rc to a string and store it for the read() call later on
-  sprintf(ret, "%d", rc);
+  // store rc for the read() call later on
+  
 
   // cleanup code at end
   printk(KERN_DEBUG "barrier_sync: call %s will return %s", callbuf, ret);
@@ -166,7 +190,11 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
 static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
                                 size_t count, loff_t *ppos) {
   int rc; 
+  char ret[3];
   preempt_disable(); // protect static variables
+
+  // convert rc to a string
+  sprintf(ret, "%d", rc);
 
   preempt_enable(); // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
@@ -201,6 +229,7 @@ static int __init barrier_sync_module_init(void) {
      return -ENODEV;
   }
   printk(KERN_DEBUG "barrier_sync: created new debugfs directory and file\n");
+
   return 0;
 }
 
