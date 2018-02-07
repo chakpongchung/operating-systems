@@ -12,8 +12,6 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/wait.h>
-#include <stdio.h>
-#include <string.h>
 #include "barrier_sync.h" /* used by both kernel module and user program */
 
 int file_value;
@@ -78,11 +76,10 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   int rc;
   char callbuf[MAX_CALL];  // local (kernel) space to store call string
   char *ret;
-  char *token;
+  char *token, *end;
   char oper[MAX_CALL];
   int param1, param2;
   long temp;
-  char **endptr;
 
   if(count >= MAX_CALL)  // the user's write() call should not include a count that exceeds MAX_CALL
     return -EINVAL;  // return the invalid error code
@@ -93,19 +90,20 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   callbuf[MAX_CALL - 1] = '\0'; /* make sure it is a terminated string */
 
   // Tokenize the call string 
-  token = strtok(callbuf, " ");  // grab the first token (operator)
-  if (token) strcpy(oper, token); // copy the token 
+  end = call_buf
+  token = strsep(&end, " ");  // grab the first token (operator)
+  if (token) { strcpy(oper, token); } // copy the token 
   else {
     // input call improperly formatted
     printk(KERN_DEBUG "barrier_sync: input call '%s %s' improperly formatted", token, callbuf);
     preempt_enable();  // clear the disable flag
     return -EINVAL;
   }
-  token = strtok(NULL, " ");  // grab the second token (integer-1)
+  token = strsep(&end, " ");  // grab the second token (integer-1)
   if (token) {
       //convert the parameter to int
       temp = strtol(token, endptr, 10);  // attempt to convert to a long
-      if (*endptr != token) param1 = (int) temp; // if success, convert to int
+      if (*endptr != token) { param1 = (int) temp; } // if success, convert to int
       else {
           // it wasn't an integer
           printk(KERN_DEBUG "barrier_sync: second argument '%s' must be integer", token);
@@ -118,18 +116,18 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
     preempt_enable();  // clear the disable flag
     return -EINVAL;
   }
-  token = strtok(NULL, " ");  // grab the third token (integer-2)
+  token = strsep(&end, " ");  // grab the third token (integer-2)
   if (token) {  // This one is optional, so no eed to throw an error, unless there are more tokens
       //convert the parameter to int
       temp = strtol(token, endptr, 10);  // attempt to convert to a long
-      if (*endptr != token) param2 = (int) temp; // if success, convert to int
+      if (*endptr != token) { param2 = (int) temp; } // if success, convert to int
       else {
         // it wasn't an integer
         printk(KERN_DEBUG "barrier_sync: third argument '%s' must be integer", token);
         preempt_enable();  // clear the disable flag
         return -EINVAL;
       }
-    token = strtok(NULL, " ");
+    token = strsep(&end, " ");
     if (token) {
       // input call improperly formatted
       printk(KERN_DEBUG "barrier_sync: input call '%s %s' improperly formatted", token, callbuf);
