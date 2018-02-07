@@ -170,7 +170,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
 
   preempt_enable(); // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
-  return rc;  /* read() calls return the number of bytes */
+  return count;  /* read() calls return the number of bytes */
 } 
 
 // Defines the functions in this module that are executed
