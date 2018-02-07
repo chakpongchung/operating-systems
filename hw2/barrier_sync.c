@@ -251,10 +251,11 @@ static int __init barrier_sync_module_init(void) {
  * freeing any memory still allocated.
  */
 static void __exit barrier_sync_module_exit(void) {
+  int i;
   debugfs_remove(file);
   debugfs_remove(dir);
   // clean up any memory allocated for queues ToDo and responses
-  for (int i==0;i<MAX_EVENTS;i++){
+  for (i=0;i<MAX_EVENTS;i++){
     kfree(queues[i]);
     queues[i] = NULL;
   }
