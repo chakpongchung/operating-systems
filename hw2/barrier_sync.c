@@ -156,7 +156,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   }
   token = strsep(&end, " ");  // grab the third token (integer-2)
   if (token) {  // This one is optional, so no eed to throw an error, unless there are more tokens
-      rc = kstrtoint(token, 10, &param1);  //convert the parameter to int
+      rc = kstrtoint(token, 10, &param2);  //convert the parameter to int
       if (rc != 0) {         // it wasn't an integer
           printk(KERN_DEBUG "barrier_sync: second argument '%s' must be integer", token);
           preempt_enable();  // clear the disable flag
