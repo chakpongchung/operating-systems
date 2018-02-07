@@ -60,7 +60,7 @@ static int event_wait(int queue, int exclusive){
   preempt_disable();
   finish_wait(&q, &wait);
   */
-  return 0;
+  return 2;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -71,7 +71,7 @@ successful completion, the module should return a character string containing on
 should return a string containing only the value -1. */
 static int event_signal(int queue){
   wake_up();
-  return 0;
+  return 3;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -84,7 +84,7 @@ the caller input string. If the operation fails for any reason, it should return
 containing only the value -1. */
 static int event_destroy(int queue){
 
-  return 0;
+  return 4;
 }
 
 static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
