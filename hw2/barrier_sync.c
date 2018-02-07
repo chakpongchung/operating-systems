@@ -3,9 +3,12 @@
 // David Dunn - Comp 790 HW2
 //
 */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/fs.h>
+#include <linux/debugfs.h>
+#include <linux/uaccess.h>
 #include <linux/sched.h>
 #include <linux/wait.h>
 #include "barrier_sync.h" /* used by both kernel module and user program */
