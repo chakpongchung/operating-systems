@@ -25,6 +25,7 @@ value from the caller input string. If the operation fails for any reason, it sh
 a string containing only the value -1. */
 static int event_create(int queue){
 
+    return 0;
 }
 
 /*  The <integer-1> parameter is the character representation of the
@@ -41,6 +42,7 @@ successful completion, the module should return a character string containing on
 should return a string containing only the value -1. */
 static int event_wait(int queue, int exclusive){
 
+    return 0;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -51,6 +53,7 @@ successful completion, the module should return a character string containing on
 should return a string containing only the value -1. */
 static int event_signal(int queue){
 
+    return 0;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -63,9 +66,10 @@ the caller input string. If the operation fails for any reason, it should return
 containing only the value -1. */
 static int event_destroy(int queue){
 
+    return 0;
 }
 
-static ssize_t getpinfo_call(struct file *file, const char __user *buf,
+static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
                                 size_t count, loff_t *ppos)
 {
   int rc;
@@ -139,10 +143,10 @@ static ssize_t getpinfo_call(struct file *file, const char __user *buf,
   }
 
   // convert rc to a string and store it for the read() call later on
-
+  
 
   // cleanup code at end
-  printk(KERN_DEBUG "barrier_sync: call %s will return %s", callbuf, respbuf);
+  printk(KERN_DEBUG "barrier_sync: call %s will return %s", callbuf, ret);
   preempt_enable();  // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
   return rc; // For Debugging
