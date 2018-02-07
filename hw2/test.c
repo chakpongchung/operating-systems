@@ -54,8 +54,9 @@ void main (int argc, char* argv[])
   do_syscall("event_create 0 1");
   do_syscall("event_create 0 1 a");
   do_syscall("event_wait 0 1");
-  do_syscall("event_signal 0");
+  do_syscall("event_signal 1");
   do_syscall("event_destroy 0");
+  do_syscall("event_wait 0 1");
 
   //fprintf(stdout, "%s", resp_buf);
 

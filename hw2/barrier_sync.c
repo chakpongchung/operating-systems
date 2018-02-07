@@ -18,7 +18,7 @@ int file_value;
 struct dentry *dir, *file;  // used to set up debugfs file name
 
 // set up array of wait queues
-wait_queue_head_t queues[MAX_EVENTS];
+wait_queue_head_t *queues[MAX_EVENTS] = {NULL};
 
 /* The <integer-1> parameter is the character representation of the
 integer value to be assigned as the event identifier for a new event. An attempt to create
@@ -28,8 +28,13 @@ completion, the module should return a character string containing only the <int
 value from the caller input string. If the operation fails for any reason, it should return
 a string containing only the value -1. */
 static int event_create(int queue){
-  if (queues[queue]) return -5;
-  init_waitqueue_head(&queues[queue]);
+  if (queues[queue]) return -5;  // check to see if already init
+  // allocate some kernel memory for the response
+  queues[queue] = (wait_queue_head_t*) kmalloc(sizeof(wait_queue_head_t), GFP_ATOMIC);
+  if (queues[queue] == NULL) {  // test if allocation failed
+     return -ENOSPC;
+  }
+  init_waitqueue_head(queues[queue]);
   return queue;
 }
 
@@ -46,6 +51,7 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_wait(int queue, int exclusive){
+  if (queues[queue] == NULL) return -6;  // check to see if already init
   /*
   if (exclusive) {
     add_wait_queue_exclusive(q, &wait);
@@ -71,6 +77,7 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_signal(int queue){
+  if (queues[queue] == NULL) return -6;  // check to see if already init
   //wake_up(&(queues[queue]));
   return 3;
 }
@@ -84,10 +91,19 @@ module should return a character string containing only the <integer-1> value fr
 the caller input string. If the operation fails for any reason, it should return a string
 containing only the value -1. */
 static int event_destroy(int queue){
+  if (queues[queue] == NULL) return -6;  // check to see if already init
   //wake_up_all(&(queues[queue]));
+  kfree(queues[queue]);
+  queues[queue] = NULL;
   return 4;
 }
 
+/* This function emulates the handling of a system call by accessing the call string from
+the user program, executing the requested function and storing a response. This function is 
+executed when a user program does a write() to the debugfs file used for emulating a system 
+call.  The buf parameter points to a user space buffer, and count is a maximum size of the 
+buffer content. The user space program is blocked at the write() call until this function 
+returns. */
 static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
                                 size_t count, loff_t *ppos)
 {
@@ -179,15 +195,11 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   return count;  /* write() calls return the number of bytes */
 }
 
-/* This function emulates the return from a system call by returning
- * the response to the user as a character string.  It is executed 
- * when the user program does a read() to the debugfs file used for 
- * emulating a system call.  The buf parameter points to a user space 
- * buffer, and count is a maximum size of the buffer space. 
- * 
- * The user space program is blocked at the read() call until this 
- * function returns.
- */
+/* This function emulates the return from a system call by returning the response to 
+the user as a character string.  It is executed  when the user program does a read() 
+to the debugfs file used for emulating a system call.  The buf parameter points to a 
+user space buffer, and count is a maximum size of the buffer space. The user space 
+program is blocked at the read() call until this function returns. */
 static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
                                 size_t count, loff_t *ppos) {
   int rc; 
@@ -241,9 +253,11 @@ static int __init barrier_sync_module_init(void) {
 static void __exit barrier_sync_module_exit(void) {
   debugfs_remove(file);
   debugfs_remove(dir);
-  //ToDo clean up any memory allocated for queues and responses
-  //if (respbuf != NULL)
-  //   kfree(respbuf);
+  // clean up any memory allocated for queues ToDo and responses
+  for (int i==0;i<MAX_EVENTS;i++){
+    kfree(queues[i]);
+    queues[i] = NULL;
+  }
 }
 
 /* Declarations required in building a module */
