@@ -10,7 +10,10 @@
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
 #include <linux/sched.h>
+#include <linux/slab.h>
 #include <linux/wait.h>
+#include <stdio.h>
+#include <string.h>
 #include "barrier_sync.h" /* used by both kernel module and user program */
 
 int file_value;
@@ -143,7 +146,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   }
 
   // convert rc to a string and store it for the read() call later on
-  
+
 
   // cleanup code at end
   printk(KERN_DEBUG "barrier_sync: call %s will return %s", callbuf, ret);
