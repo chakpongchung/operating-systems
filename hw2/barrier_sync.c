@@ -70,7 +70,7 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_signal(int queue){
-  wake_up();
+  //wake_up();
   return 3;
 }
 
