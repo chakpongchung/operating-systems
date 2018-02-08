@@ -241,21 +241,21 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   preempt_disable(); // protect static variables
   cur_pid = task_pid_nr(current);
   printk(KERN_DEBUG "barrier_sync: starting loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
-  /*
+  
   list_for_each_entry_safe(my_retval, next, &ret_list, list){
     printk(KERN_DEBUG "barrier_sync: inside loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
     printk(KERN_DEBUG "barrier_sync: inside loop       next = 0x%08x", next);  // goes into /var/log/kern.log
     if(my_retval->tsk == cur_pid){
       printk(KERN_DEBUG "barrier_sync: inside if  my_retval->rc = %d", my_retval->rc);  // goes into /var/log/kern.log
       rc = my_retval->rc;
-      list_del(&my_retval->list);
-      printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
-      kfree(my_retval);
-      printk(KERN_DEBUG "barrier_sync: freed      my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
+      //list_del(&my_retval->list);
+      //printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
+      //kfree(my_retval);
+      //printk(KERN_DEBUG "barrier_sync: freed      my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
       break;
     }
   }
-  */
+  
   // convert rc to a string
   sprintf(respbuf, "%d", rc);
   printk(KERN_DEBUG "barrier_sync: converted to string     respbuf = %s", respbuf);  // goes into /var/log/kern.log
