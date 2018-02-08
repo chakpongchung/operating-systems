@@ -248,16 +248,18 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
     if(my_retval->tsk == cur_pid){
       printk(KERN_DEBUG "barrier_sync: inside if  my_retval->rc = %d", my_retval->rc);  // goes into /var/log/kern.log
       //rc = my_retval->rc;
-      sprintf(respbuf, "%d", my_retval->rc);  // convert rc to a string
-      printk(KERN_DEBUG "barrier_sync: respbuf in string    = %s", respbuf);  // goes into /var/log/kern.log
       //list_del(&my_retval->list);
       //printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
       //kfree(my_retval);
       //printk(KERN_DEBUG "barrier_sync: freed      my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
-      break;
+      //break;
     }
   }
-     
+  
+  // convert rc to a string
+  sprintf(respbuf, "%d", rc);
+  printk(KERN_DEBUG "barrier_sync: converted to string     respbuf = %s", respbuf);  // goes into /var/log/kern.log
+      
   // Use the kernel function to copy from kernel space to user space.
   if (count < strlen(respbuf)) { // user's buffer is smaller than response string
     respbuf[count - 1] = '\0'; // truncate response string
