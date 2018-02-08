@@ -203,10 +203,11 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   // store rc for the read() call later on
   my_retval->tsk = task_pid_nr(current);
   my_retval->rc = rc;
+  INIT_LIST_HEAD(&my_retval->list);
   list_add(&my_retval->list, &ret_list);
 
   // cleanup code at end
-  printk(KERN_DEBUG "barrier_sync: call %s will return %d", callbuf, rc);
+  printk(KERN_DEBUG "barrier_sync: call %s will return %d", callbuf, rc);  // goes into /var/log/kern.log
   preempt_enable();  // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
   return rc; // For Debugging
