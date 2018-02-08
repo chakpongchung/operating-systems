@@ -235,12 +235,13 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   char respbuf[3];
   retval *my_retval, *next;
   pid_t cur_pid;
-  /*
+  
   printk(KERN_DEBUG "barrier_sync: entering return  ret_list = 0x%08x", ret_list);  // goes into /var/log/kern.log
   
   preempt_disable(); // protect static variables
   cur_pid = task_pid_nr(current);
   printk(KERN_DEBUG "barrier_sync: starting loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
+  /*
   list_for_each_entry_safe(my_retval, next, &ret_list, list){
     printk(KERN_DEBUG "barrier_sync: inside loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
     printk(KERN_DEBUG "barrier_sync: inside loop       next = 0x%08x", next);  // goes into /var/log/kern.log
@@ -266,7 +267,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   else 
     rc = copy_to_user(userbuf, respbuf, rc); // rc is unchanged
   printk(KERN_DEBUG "barrier_sync: finished copying to user");  // goes into /var/log/kern.log
-  
+  */
   preempt_enable(); // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
   printk(KERN_DEBUG "barrier_sync: about to return     count = %d", count);  // goes into /var/log/kern.log
