@@ -247,7 +247,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
     printk(KERN_DEBUG "barrier_sync: inside loop       next = 0x%08x", next);  // goes into /var/log/kern.log
     if(my_retval->tsk == cur_pid){
       printk(KERN_DEBUG "barrier_sync: inside if  my_retval->rc = %d", my_retval->rc);  // goes into /var/log/kern.log
-      rc = my_retval->rc;
+      //rc = my_retval->rc;
       //list_del(&my_retval->list);
       //printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
       //kfree(my_retval);
