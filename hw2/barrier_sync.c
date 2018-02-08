@@ -252,7 +252,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
       //printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
       //kfree(my_retval);
       //printk(KERN_DEBUG "barrier_sync: freed      my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
-      break;
+      //break;
     }
   }
   
