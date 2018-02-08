@@ -64,17 +64,17 @@ static int event_wait(int queue, int exclusive){
   DEFINE_WAIT(wait);
   if (exclusive) {
     add_wait_queue_exclusive(queues[queue], &wait);
-    prepare_to_wait_exclusive(&(queues[queue]), &wait, TASK_INTERRUPTIBLE);
+    prepare_to_wait_exclusive(queues[queue], &wait, TASK_INTERRUPTIBLE);
   } else {
     add_wait_queue(queues[queue], &wait);
-    prepare_to_wait(&(queues[queue]), &wait, TASK_INTERRUPTIBLE);
+    prepare_to_wait(queues[queue], &wait, TASK_INTERRUPTIBLE);
   }
   
   // Now that we are on the wait queue do a context switch
   preempt_enable();
   schedule();
   preempt_disable();
-  finish_wait(&(queues[queue]), &wait);
+  finish_wait(queues[queue], &wait);
   
   return queue;
 }
@@ -87,7 +87,7 @@ successful completion, the module should return a character string containing on
 should return a string containing only the value -1. */
 static int event_signal(int queue){
   if (queues[queue] == NULL) return -1;  // check to see if already init
-  wake_up(&(queues[queue]));
+  wake_up(queues[queue]);
   return queue;
 }
 
@@ -101,7 +101,7 @@ the caller input string. If the operation fails for any reason, it should return
 containing only the value -1. */
 static int event_destroy(int queue){
   if (queues[queue] == NULL) return -1;  // check to see if already init
-  wake_up_all(&(queues[queue]));
+  wake_up_all(queues[queue]);
   kfree(queues[queue]);
   queues[queue] = NULL;
   return queue;
@@ -191,7 +191,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
      preempt_enable(); 
      return -ENOSPC;
   }
-  printk(KERN_DEBUG "barrier_sync: allocated storage     my_retval = 0x%08x   ",my_retval);  // goes into /var/log/kern.log
+  //printk(KERN_DEBUG "barrier_sync: allocated storage     my_retval = 0x%08x   ",my_retval);  // goes into /var/log/kern.log
 
   // call the right function for the chosen operator
   if (strcmp(oper, "event_create") == 0) {
