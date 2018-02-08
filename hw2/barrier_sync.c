@@ -244,12 +244,14 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
       list_del(&my_retval->list);
       printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
       kfree(my_retval);
+      printk(KERN_DEBUG "barrier_sync: freed      my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
       break;
     }
   }
   // convert rc to a string
   sprintf(respbuf, "%d", rc);
-
+  printk(KERN_DEBUG "barrier_sync: converted to string     respbuf = %s", respbuf);  // goes into /var/log/kern.log
+      
   // Use the kernel function to copy from kernel space to user space.
   if (count < strlen(respbuf)) { // user's buffer is smaller than response string
     respbuf[count - 1] = '\0'; // truncate response string
@@ -257,7 +259,8 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   }
   else 
     rc = copy_to_user(userbuf, respbuf, rc); // rc is unchanged
-
+  printk(KERN_DEBUG "barrier_sync: about to return     count = %d", count);  // goes into /var/log/kern.log
+  
   preempt_enable(); // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
   return count;  /* read() calls return the number of bytes */
