@@ -36,7 +36,7 @@ completion, the module should return a character string containing only the <int
 value from the caller input string. If the operation fails for any reason, it should return
 a string containing only the value -1. */
 static int event_create(int queue){
-  if (queues[queue]) return -5;  // check to see if already init
+  if (queues[queue]) return -1;  // check to see if already init
   // allocate some kernel memory for the response
   queues[queue] = (wait_queue_head_t*) kmalloc(sizeof(wait_queue_head_t), GFP_ATOMIC);
   if (queues[queue] == NULL) {  // test if allocation failed
@@ -59,23 +59,24 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_wait(int queue, int exclusive){
-  if (queues[queue] == NULL) return -6;  // check to see if already init
-  /*
+  if (queues[queue] == NULL) return -1;  // check to see if already init
+  
+  DEFINE_WAIT(wait);
   if (exclusive) {
-    add_wait_queue_exclusive(q, &wait);
-    prepare_to_wait_exclusive(&q, &wait, TASK_INTERRUPTIBLE);
+    add_wait_queue_exclusive(queues[queue], &wait);
+    prepare_to_wait_exclusive(&(queues[queue]), &wait, TASK_INTERRUPTIBLE);
   } else {
-    add_wait_queue(q, &wait);
-    prepare_to_wait(&q, &wait, TASK_INTERRUPTIBLE);
+    add_wait_queue(queues[queue], &wait);
+    prepare_to_wait(&(queues[queue]), &wait, TASK_INTERRUPTIBLE);
   }
   
+  // Now that we are on the wait queue do a context switch
   preempt_enable();
-  // call schedule() here
   schedule();
   preempt_disable();
-  finish_wait(&q, &wait);
-  */
-  return 2;
+  finish_wait(&(queues[queue]), &wait);
+  
+  return queue;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -85,9 +86,9 @@ successful completion, the module should return a character string containing on
 <integer-1> value from the caller input string. If the operation fails for any reason, it
 should return a string containing only the value -1. */
 static int event_signal(int queue){
-  if (queues[queue] == NULL) return -6;  // check to see if already init
-  //wake_up(&(queues[queue]));
-  return 3;
+  if (queues[queue] == NULL) return -1;  // check to see if already init
+  wake_up(&(queues[queue]));
+  return queue;
 }
 
 /*The <integer-1> parameter is the character representation of the
@@ -99,11 +100,11 @@ module should return a character string containing only the <integer-1> value fr
 the caller input string. If the operation fails for any reason, it should return a string
 containing only the value -1. */
 static int event_destroy(int queue){
-  if (queues[queue] == NULL) return -6;  // check to see if already init
-  //wake_up_all(&(queues[queue]));
+  if (queues[queue] == NULL) return -1;  // check to see if already init
+  wake_up_all(&(queues[queue]));
   kfree(queues[queue]);
   queues[queue] = NULL;
-  return 4;
+  return queue;
 }
 
 /* This function emulates the handling of a system call by accessing the call string from
@@ -202,7 +203,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   } else if (strcmp(oper, "event_destroy") == 0) {
     rc = event_destroy(param1);
   } else{ // invalid call
-    rc = -99;
+    rc = -1;
   }
   printk(KERN_DEBUG "barrier_sync: returned from function     rc = %d   ",rc);  // goes into /var/log/kern.log
 
@@ -212,9 +213,9 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   INIT_LIST_HEAD(&my_retval->list);
   list_add(&my_retval->list, &ret_list);
 
-  printk(KERN_DEBUG "barrier_sync: ending call  ret_list = 0x%08x", ret_list);  // goes into /var/log/kern.log
-  printk(KERN_DEBUG "barrier_sync: ending call  my_retval->list = 0x%08x", my_retval->list);  // goes into /var/log/kern.log
-  printk(KERN_DEBUG "barrier_sync: ending call  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
+  //printk(KERN_DEBUG "barrier_sync: ending call  ret_list = 0x%08x", ret_list);  // goes into /var/log/kern.log
+  //printk(KERN_DEBUG "barrier_sync: ending call  my_retval->list = 0x%08x", my_retval->list);  // goes into /var/log/kern.log
+  //printk(KERN_DEBUG "barrier_sync: ending call  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
   
   // cleanup code at end
   printk(KERN_DEBUG "barrier_sync: call %s will return %d", callbuf, rc);  // goes into /var/log/kern.log
@@ -236,20 +237,19 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   retval *my_retval, *next;
   pid_t cur_pid;
   
-  printk(KERN_DEBUG "barrier_sync: entering return  ret_list = 0x%08x", ret_list);  // goes into /var/log/kern.log
+  //printk(KERN_DEBUG "barrier_sync: entering return  ret_list = 0x%08x", ret_list);  // goes into /var/log/kern.log
   
   preempt_disable(); // protect static variables
   cur_pid = task_pid_nr(current);
-  printk(KERN_DEBUG "barrier_sync: starting loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
+  printk(KERN_DEBUG "barrier_sync: starting return loop  cur_pid = %d", cur_pid);  // goes into /var/log/kern.log
   
   list_for_each_entry_safe(my_retval, next, &ret_list, list){
-    printk(KERN_DEBUG "barrier_sync: inside loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
-    printk(KERN_DEBUG "barrier_sync: inside loop       next = 0x%08x", next);  // goes into /var/log/kern.log
+    //printk(KERN_DEBUG "barrier_sync: inside loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
+    //printk(KERN_DEBUG "barrier_sync: inside loop       next = 0x%08x", next);  // goes into /var/log/kern.log
     if(my_retval->tsk == cur_pid){
-      printk(KERN_DEBUG "barrier_sync: inside if  my_retval->rc = %d", my_retval->rc);  // goes into /var/log/kern.log
-      //sprintf(respbuf, "%d", my_retval->rc);
+      //printk(KERN_DEBUG "barrier_sync: inside if  my_retval->rc = %d", my_retval->rc);  // goes into /var/log/kern.log
       rc = my_retval->rc;
-      list_del(&(my_retval->list));
+      list_del(&my_retval->list);
       //printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
       kfree(my_retval);
       //printk(KERN_DEBUG "barrier_sync: freed      my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
@@ -267,7 +267,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
     rc = copy_to_user(userbuf, respbuf, count); // count is returned in rc
   }
   else 
-    rc = copy_to_user(userbuf, respbuf, strlen(respbuf)+1); // rc is unchanged
+    rc = copy_to_user(userbuf, respbuf, strlen(respbuf)+1); // lenght is returned to rc
   printk(KERN_DEBUG "barrier_sync: finished copying to user");  // goes into /var/log/kern.log
   
   preempt_enable(); // clear the disable flag
