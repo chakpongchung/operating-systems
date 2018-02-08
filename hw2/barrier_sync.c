@@ -206,6 +206,9 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   INIT_LIST_HEAD(&my_retval->list);
   list_add(&my_retval->list, &ret_list);
 
+  printk(KERN_DEBUG "barrier_sync: ending call  &ret_list = 0x%08x", &ret_list);  // goes into /var/log/kern.log
+  printk(KERN_DEBUG "barrier_sync: ending call  &my_retval->list = 0x%08x", &my_retval->list);  // goes into /var/log/kern.log
+  
   // cleanup code at end
   printk(KERN_DEBUG "barrier_sync: call %s will return %d", callbuf, rc);  // goes into /var/log/kern.log
   preempt_enable();  // clear the disable flag
@@ -225,7 +228,9 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   char respbuf[3];
   retval *my_retval, *next;
   pid_t cur_pid;
-
+  
+  printk(KERN_DEBUG "barrier_sync: entering return  &ret_list = 0x%08x", &ret_list);  // goes into /var/log/kern.log
+  
   preempt_disable(); // protect static variables
   cur_pid = task_pid_nr(current);
   list_for_each_entry_safe(my_retval, next, &ret_list, list){
