@@ -220,12 +220,28 @@ user space buffer, and count is a maximum size of the buffer space. The user spa
 program is blocked at the read() call until this function returns. */
 static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
                                 size_t count, loff_t *ppos) {
-  int rc; 
-  char ret[3];
-  preempt_disable(); // protect static variables
+  int rc = -1; 
+  char respbuf[3];
+  retval *my_retval;
+  pid_t cur_pid;
 
+  preempt_disable(); // protect static variables
+  cur_pid = task_pid_nr(current);
+  list_for_each_entry(my_retval, &ret_list, list){
+    if(my_retval->tsk == cur_pid){
+      rc = my_retval->rc;
+    }
+  }
   // convert rc to a string
-  sprintf(ret, "%d", rc);
+  sprintf(respbuf, "%d", rc);
+
+  // Use the kernel function to copy from kernel space to user space.
+  if (count < strlen(respbuf)) { // user's buffer is smaller than response string
+    respbuf[count - 1] = '\0'; // truncate response string
+    rc = copy_to_user(userbuf, respbuf, count); // count is returned in rc
+  }
+  else 
+    rc = copy_to_user(userbuf, respbuf, rc); // rc is unchanged
 
   preempt_enable(); // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
