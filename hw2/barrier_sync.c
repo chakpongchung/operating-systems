@@ -122,6 +122,8 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   int param1, param2;
   retval *my_retval;
 
+  printk(KERN_DEBUG "barrier_sync: entering call  ");  // goes into /var/log/kern.log
+  
   if(count >= MAX_CALL)  // the user's write() call should not include a count that exceeds MAX_CALL
     return -EINVAL;  // return the invalid error code
   preempt_disable();  // protect static variables
@@ -130,6 +132,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   rc = copy_from_user(callbuf, buf, count);
   callbuf[MAX_CALL - 1] = '\0'; /* make sure it is a terminated string */
 
+  printk(KERN_DEBUG "barrier_sync: read the string: %s   ",callbuf);  // goes into /var/log/kern.log
   // Tokenize the call string 
   /* Apparently I could have replaced this entire section with the 
      following sscanf(). 
@@ -179,13 +182,15 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
       return -EINVAL;
     }
   } 
-
+  printk(KERN_DEBUG "barrier_sync: tokenized the string: %s   ",oper);  // goes into /var/log/kern.log
+  
   // prepare storage for returning value
   my_retval = kmalloc(sizeof(retval), GFP_ATOMIC);
   if (my_retval == NULL) {  // test if allocation failed
      preempt_enable(); 
      return -ENOSPC;
   }
+  printk(KERN_DEBUG "barrier_sync: allocated storage     my_retval = 0x%08x   ",my_retval);  // goes into /var/log/kern.log
 
   // call the right function for the chosen operator
   if (strcmp(oper, "event_create") == 0) {
@@ -199,6 +204,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   } else{ // invalid call
     rc = -100;
   }
+  printk(KERN_DEBUG "barrier_sync: returned from function     rc = %d   ",rc);  // goes into /var/log/kern.log
 
   // store rc for the read() call later on
   my_retval->tsk = task_pid_nr(current);
@@ -259,10 +265,11 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   }
   else 
     rc = copy_to_user(userbuf, respbuf, rc); // rc is unchanged
-  printk(KERN_DEBUG "barrier_sync: about to return     count = %d", count);  // goes into /var/log/kern.log
+  printk(KERN_DEBUG "barrier_sync: finished copying to user");  // goes into /var/log/kern.log
   
   preempt_enable(); // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
+  printk(KERN_DEBUG "barrier_sync: about to return     count = %d", count);  // goes into /var/log/kern.log
   return count;  /* read() calls return the number of bytes */
 } 
 
