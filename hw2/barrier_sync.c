@@ -267,7 +267,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
     rc = copy_to_user(userbuf, respbuf, count); // count is returned in rc
   }
   else 
-    rc = copy_to_user(userbuf, respbuf, rc); // rc is unchanged
+    rc = copy_to_user(userbuf, respbuf, strlen(respbuf)+1); // rc is unchanged
   printk(KERN_DEBUG "barrier_sync: finished copying to user");  // goes into /var/log/kern.log
   
   preempt_enable(); // clear the disable flag
