@@ -222,14 +222,17 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
                                 size_t count, loff_t *ppos) {
   int rc = -1; 
   char respbuf[3];
-  retval *my_retval;
+  retval *my_retval, *next;
   pid_t cur_pid;
 
   preempt_disable(); // protect static variables
   cur_pid = task_pid_nr(current);
-  list_for_each_entry(my_retval, &ret_list, list){
+  list_for_each_entry_safe(my_retval, next, &ret_list, list){
     if(my_retval->tsk == cur_pid){
       rc = my_retval->rc;
+      list_del(&my_retval->list);
+      kfree(my_retval);
+      break;
     }
   }
   // convert rc to a string
