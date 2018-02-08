@@ -255,6 +255,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
       break;
     }
   }
+  */
   // convert rc to a string
   sprintf(respbuf, "%d", rc);
   printk(KERN_DEBUG "barrier_sync: converted to string     respbuf = %s", respbuf);  // goes into /var/log/kern.log
@@ -267,7 +268,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   else 
     rc = copy_to_user(userbuf, respbuf, rc); // rc is unchanged
   printk(KERN_DEBUG "barrier_sync: finished copying to user");  // goes into /var/log/kern.log
-  */
+  
   preempt_enable(); // clear the disable flag
   *ppos = 0;  /* reset the offset to zero */
   printk(KERN_DEBUG "barrier_sync: about to return     count = %d", count);  // goes into /var/log/kern.log
