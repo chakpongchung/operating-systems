@@ -232,7 +232,7 @@ program is blocked at the read() call until this function returns. */
 static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
                                 size_t count, loff_t *ppos) {
   int rc = -1; 
-  char respbuf[3];
+  char respbuf[4];
   retval *my_retval, *next;
   pid_t cur_pid;
   
