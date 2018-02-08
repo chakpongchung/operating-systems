@@ -20,6 +20,14 @@ struct dentry *dir, *file;  // used to set up debugfs file name
 // set up array of wait queues
 wait_queue_head_t *queues[MAX_EVENTS] = {NULL};
 
+// structure for listhead of return values
+typedef struct {
+  pid_t tsk;
+  int rc;
+  struct list_head list;
+} retval;
+static LIST_HEAD(ret_list);
+
 /* The <integer-1> parameter is the character representation of the
 integer value to be assigned as the event identifier for a new event. An attempt to create
 an event using an already existing identifier is an error. This call is used to instantiate a
@@ -112,6 +120,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   char *token, *end;
   char oper[MAX_CALL];
   int param1, param2;
+  retval *my_retval;
 
   if(count >= MAX_CALL)  // the user's write() call should not include a count that exceeds MAX_CALL
     return -EINVAL;  // return the invalid error code
@@ -171,6 +180,13 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
     }
   } 
 
+  // prepare storage for returning value
+  my_retval = kmalloc(sizeof(retval), GFP_ATOMIC);
+  if (my_retval == NULL) {  // test if allocation failed
+     preempt_enable(); 
+     return -ENOSPC;
+  }
+
   // call the right function for the chosen operator
   if (strcmp(oper, "event_create") == 0) {
     rc = event_create(param1);
@@ -185,7 +201,9 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   }
 
   // store rc for the read() call later on
-  
+  my_retval->tsk = task_pid_nr(current);
+  my_retval->rc = rc;
+  list_add(&my_retval->list, &ret_list);
 
   // cleanup code at end
   printk(KERN_DEBUG "barrier_sync: call %s will return %d", callbuf, rc);
