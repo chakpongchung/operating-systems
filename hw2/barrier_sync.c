@@ -202,7 +202,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   } else if (strcmp(oper, "event_destroy") == 0) {
     rc = event_destroy(param1);
   } else{ // invalid call
-    rc = -100;
+    rc = -99;
   }
   printk(KERN_DEBUG "barrier_sync: returned from function     rc = %d   ",rc);  // goes into /var/log/kern.log
 
@@ -246,14 +246,14 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
     printk(KERN_DEBUG "barrier_sync: inside loop  my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
     printk(KERN_DEBUG "barrier_sync: inside loop       next = 0x%08x", next);  // goes into /var/log/kern.log
     if(my_retval->tsk == cur_pid){
-      //printk(KERN_DEBUG "barrier_sync: inside if  my_retval->rc = %d", my_retval->rc);  // goes into /var/log/kern.log
-      sprintf(respbuf, "%d", my_retval->rc);
-      //rc = my_retval->rc;
-      //list_del(&my_retval->list);
+      printk(KERN_DEBUG "barrier_sync: inside if  my_retval->rc = %d", my_retval->rc);  // goes into /var/log/kern.log
+      //sprintf(respbuf, "%d", my_retval->rc);
+      rc = my_retval->rc;
+      list_del(&my_retval->list);
       //printk(KERN_DEBUG "barrier_sync: deleted    my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
-      //kfree(my_retval);
+      kfree(my_retval);
       //printk(KERN_DEBUG "barrier_sync: freed      my_retval = 0x%08x", my_retval);  // goes into /var/log/kern.log
-      //break;
+      break;
     }
   }
   
