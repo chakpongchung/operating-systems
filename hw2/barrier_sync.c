@@ -235,7 +235,7 @@ static ssize_t barrier_sync_return(struct file *file, char __user *userbuf,
   char respbuf[3];
   retval *my_retval, *next;
   pid_t cur_pid;
-  
+  /*
   printk(KERN_DEBUG "barrier_sync: entering return  ret_list = 0x%08x", ret_list);  // goes into /var/log/kern.log
   
   preempt_disable(); // protect static variables
