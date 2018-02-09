@@ -319,8 +319,6 @@ static int __init barrier_sync_module_init(void) {
 static void __exit barrier_sync_module_exit(void) {
   int i;
   retval *my_retval, *next;
-  debugfs_remove(file);
-  debugfs_remove(dir);
   // wake up and clean up memory allocated for queues
   for (i=0;i<MAX_EVENTS;i++){
     wake_up_all(queues[i]);
@@ -331,6 +329,8 @@ static void __exit barrier_sync_module_exit(void) {
     list_del(&my_retval->list);
     kfree(my_retval);
   }
+  debugfs_remove(file);
+  debugfs_remove(dir);
 }
 
 /* Declarations required in building a module */
