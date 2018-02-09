@@ -61,11 +61,11 @@ void main (int argc, char* argv[])
   */
 
   do_syscall("event_wait 89 0");
-  fprintf(stdout, "Done waiting on queue: %s", resp_buf);  
+  fprintf(stdout, "Done waiting on queue: %s\n", resp_buf);  
   do_syscall("event_wait 23 0");
-  fprintf(stdout, "Done waiting on queue: %s", resp_buf);
+  fprintf(stdout, "Done waiting on queue: %s\n", resp_buf);
   do_syscall("event_wait 0 0");
-  fprintf(stdout, "Done waiting on queue: %s", resp_buf);
+  fprintf(stdout, "Done waiting on queue: %s\n", resp_buf);
 
   close (fp);
 } /* end main() */

@@ -60,20 +60,20 @@ void main (int argc, char* argv[])
   do_syscall("event_wait 0 1");
   */
 
-  do_syscall("event_signal 89");
-  fprintf(stdout, "Signaled queue: %s", resp_buf);  
+  fprintf(stdout, "Signaling queue: 89\n"); 
+  do_syscall("event_signal 89"); 
+  fprintf(stdout, "Signaling queue: 0\n"); 
   do_syscall("event_signal 0");
-  fprintf(stdout, "Signaled queue: %s", resp_buf);
+  fprintf(stdout, "Signaling queue: 0\n"); 
   do_syscall("event_signal 0");
-  fprintf(stdout, "Signaled on queue: %s", resp_buf);
+  fprintf(stdout, "Signaling queue: 23\n"); 
   do_syscall("event_signal 23");
-  fprintf(stdout, "Signaled on queue: %s", resp_buf);
+  fprintf(stdout, "Signaling queue: 89\n"); 
   do_syscall("event_signal 89");
-  fprintf(stdout, "Signaled on queue: %s", resp_buf);
+  fprintf(stdout, "Signaling queue: 23\n"); 
   do_syscall("event_signal 23");
-  fprintf(stdout, "Signaled on queue: %s", resp_buf);
+  fprintf(stdout, "Signaling queue: 0\n"); 
   do_syscall("event_signal 0");
-  fprintf(stdout, "Signaled on queue: %s", resp_buf);
 
   close (fp);
 } /* end main() */
