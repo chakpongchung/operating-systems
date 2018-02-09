@@ -60,12 +60,10 @@ void main (int argc, char* argv[])
   do_syscall("event_wait 0 1");
   */
 
-  do_syscall("event_wait 0 0");
-  fprintf(stdout, "Done waiting on queue: %s\n", resp_buf);
-  do_syscall("event_wait 23 0");
-  fprintf(stdout, "Done waiting on queue: %s\n", resp_buf);
-  do_syscall("event_wait 89 0");
-  fprintf(stdout, "Done waiting on queue: %s\n", resp_buf);  
+  do_syscall("event_create 0");
+  do_syscall("event_create 23");
+  do_syscall("event_create 89");
+  fprintf(stdout, "created 3 queues\n");
 
   close (fp);
 } /* end main() */
