@@ -36,7 +36,9 @@ completion, the module should return a character string containing only the <int
 value from the caller input string. If the operation fails for any reason, it should return
 a string containing only the value -1. */
 static int event_create(int queue){
+  printk(KERN_DEBUG "barrier_sync: entering event_create for queue %d  \n", queue);  // goes into /var/log/kern.log
   if (queues[queue]) return -1;  // check to see if already init
+  printk(KERN_DEBUG "barrier_sync: running event_create for queue %d  \n", queue);  // goes into /var/log/kern.log
   // allocate some kernel memory for the response
   queues[queue] = (wait_queue_head_t*) kmalloc(sizeof(wait_queue_head_t), GFP_ATOMIC);
   if (queues[queue] == NULL) {  // test if allocation failed
@@ -135,7 +137,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   rc = copy_from_user(callbuf, buf, count);
   callbuf[MAX_CALL - 1] = '\0'; /* make sure it is a terminated string */
 
-  printk(KERN_DEBUG "barrier_sync: read the string: %s   ",callbuf);  // goes into /var/log/kern.log
+  printk(KERN_DEBUG "barrier_sync: read the string: %s   \n",callbuf);  // goes into /var/log/kern.log
   // Tokenize the call string 
   /* Apparently I could have replaced this entire section with the 
      following sscanf(). 
@@ -185,7 +187,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
       return -EINVAL;
     }
   } 
-  printk(KERN_DEBUG "barrier_sync: tokenized the string: %s   ",oper);  // goes into /var/log/kern.log
+  printk(KERN_DEBUG "barrier_sync: tokenized the string: %s   \n",oper);  // goes into /var/log/kern.log
   
   // prepare storage for returning value
   my_retval = kmalloc(sizeof(retval), GFP_ATOMIC);
@@ -207,7 +209,7 @@ static ssize_t barrier_sync_call(struct file *file, const char __user *buf,
   } else{ // invalid call
     rc = -1;
   }
-  printk(KERN_DEBUG "barrier_sync: returned from function     rc = %d   ",rc);  // goes into /var/log/kern.log
+  printk(KERN_DEBUG "barrier_sync: returned from function     rc = %d   \n",rc);  // goes into /var/log/kern.log
 
   // store rc for the read() call later on
   my_retval->tsk = task_pid_nr(current);

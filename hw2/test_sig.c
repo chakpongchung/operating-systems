@@ -62,16 +62,22 @@ void main (int argc, char* argv[])
 
   fprintf(stdout, "Signaling queue: 89\n"); 
   do_syscall("event_signal 89"); 
+  sleep(3);
   fprintf(stdout, "Signaling queue: 0\n"); 
   do_syscall("event_signal 0");
+  sleep(3);
   fprintf(stdout, "Signaling queue: 0\n"); 
   do_syscall("event_signal 0");
+  sleep(3);
   fprintf(stdout, "Signaling queue: 23\n"); 
   do_syscall("event_signal 23");
+  sleep(3);
   fprintf(stdout, "Signaling queue: 89\n"); 
   do_syscall("event_signal 89");
+  sleep(3);
   fprintf(stdout, "Signaling queue: 23\n"); 
   do_syscall("event_signal 23");
+  sleep(3);
   fprintf(stdout, "Signaling queue: 0\n"); 
   do_syscall("event_signal 0");
 
