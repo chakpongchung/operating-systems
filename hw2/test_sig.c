@@ -60,7 +60,7 @@ void main (int argc, char* argv[])
   do_syscall("event_wait 0 1");
   */
 
-  do_syscall("event_signal 89 ");
+  do_syscall("event_signal 89");
   fprintf(stdout, "Signaled queue: %s", resp_buf);  
   do_syscall("event_signal 0");
   fprintf(stdout, "Signaled queue: %s", resp_buf);
