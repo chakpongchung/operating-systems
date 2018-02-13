@@ -10,7 +10,7 @@
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
 #include <linux/mutex.h>
-#include "mutex.h" /* used by both kernel module and user program */
+#include "GPU_Locks_kernel.h" /* used by both kernel module and user program */
 
 int file_value;
 struct dentry *dir, *file;  // used to set up debugfs file name
