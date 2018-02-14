@@ -10,6 +10,7 @@
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
 #include <linux/mutex.h>
+#include <linux/sched.h>
 #include "GPU_Locks_kernel.h" /* used by both kernel module and user program */
 
 int file_value;
