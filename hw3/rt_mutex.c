@@ -9,7 +9,7 @@
 #include <linux/fs.h>
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
-#include <linux/rt_mutex.h>
+#include <linux/rtmutex.h>
 #include <linux/sched.h>
 #include "GPU_Locks_kernel.h" /* used by both kernel module and user program */
 
