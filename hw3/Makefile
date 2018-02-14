@@ -1,5 +1,5 @@
 obj-m += mutex.o
-#obj-m += rt_mutex.o
+obj-m += rt_mutex.o
 
 K=$(shell uname -r)
 M=$(PWD)
