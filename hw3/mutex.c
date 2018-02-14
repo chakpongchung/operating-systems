@@ -21,7 +21,7 @@ DEFINE_MUTEX(ee_mutex);
 pid_t ee_lock_pid = 0; // the pid that holds the lock
 
 /*  */
-static int ce_lock(){
+static int ce_lock(void){
   printk(KERN_DEBUG "mutex: entering ce_lock  \n");  // goes into /var/log/kern.log
   mutex_lock(&ce_mutex);
   ce_lock_pid = task_pid_nr(current);
@@ -29,7 +29,7 @@ static int ce_lock(){
 }
 
 /*  */
-static int ce_unlock(){
+static int ce_unlock(void){
   pid_t my_pid;
   printk(KERN_DEBUG "mutex: entering ce_unlock  \n");  // goes into /var/log/kern.log
   my_pid = task_pid_nr(current);
@@ -40,7 +40,7 @@ static int ce_unlock(){
 }
 
 /*  */
-static int ee_lock(){
+static int ee_lock(void){
   printk(KERN_DEBUG "mutex: entering ee_lock  \n");  // goes into /var/log/kern.log
   mutex_lock(&ee_mutex);
   ee_lock_pid = task_pid_nr(current);
@@ -48,7 +48,8 @@ static int ee_lock(){
 }
 
 /*  */
-static int ee_unlock(){
+static int ee_unlock(void){
+  pid_t my_pid;
   printk(KERN_DEBUG "mutex: entering ee_unlock  \n");  // goes into /var/log/kern.log
   my_pid = task_pid_nr(current);
   if (my_pid != ee_lock_pid) return -1;  // if this is some other process that doesn't hold the lock, return
