@@ -83,19 +83,11 @@ static ssize_t mutex_call(struct file *file, const char __user *buf,
 
   printk(KERN_DEBUG "mutex: read the string: %s   \n",callbuf);  // goes into /var/log/kern.log
   // Tokenize the call string 
-  rc = sscanf(callbuff, "%s", oper);
+  rc = sscanf(callbuf, "%s", oper);
   if (rc != 1){
     preempt_enable(); 
     return -ENOSPC;
   }
-  
-  // prepare storage for returning value
-  my_retval = kmalloc(sizeof(retval), GFP_ATOMIC);
-  if (my_retval == NULL) {  // test if allocation failed
-    preempt_enable(); 
-    return -ENOSPC;
-  }
-  //printk(KERN_DEBUG "mutex: allocated storage     my_retval = 0x%08x   ",my_retval);  // goes into /var/log/kern.log
 
   // call the right function for the chosen operator
   if (strcmp(oper, "CE_Lock") == 0) {
