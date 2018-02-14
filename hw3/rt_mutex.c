@@ -16,9 +16,9 @@
 int file_value;
 struct dentry *dir, *file;  // used to set up debugfs file name
 
-DEFINE_MUTEX(ce_mutex);
+DEFINE_RT_MUTEX(ce_mutex);
 pid_t ce_lock_pid = 0; // the pid that holds the lock
-DEFINE_MUTEX(ee_mutex);
+DEFINE_RT_MUTEX(ee_mutex);
 pid_t ee_lock_pid = 0; // the pid that holds the lock
 
 /*  */
